@@ -1,4 +1,4 @@
-# TcpInstruments
+# TcpInstruments (Forked to TcpControl)
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Orchard-Ultrasound-Innovation.github.io/TcpInstruments.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://orchard-ultrasound-innovation.github.io/TcpInstruments.jl/dev/)
