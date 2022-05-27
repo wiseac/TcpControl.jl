@@ -5,6 +5,7 @@ This package can be used to control TCP devices through SCPI. This is a forked d
 
 This package is based on code from [GenericInstruments.jl](https://ci.appveyor.com/project/iuliancioarca/GenericInstruments-jl)
 which was again based on [Instruments.jl](https://github.com/BBN-Q/Instruments.jl). 
+Further based on [TcpInstruments.jl](https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl).
 
 
 <details><summary>Installation</summary>
