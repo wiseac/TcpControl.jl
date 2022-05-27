@@ -10,20 +10,10 @@
 [![GitHub commits since tagged version](https://img.shields.io/github/commits-since/Orchard-Ultrasound-Innovation/TcpInstruments.jl/v0.8.8.svg)](https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl)
 [![Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/TcpInstruments)](https://pkgs.genieframework.com?packages=TcpInstruments)
 
-Control common lab equipment via SCPI over Ethernet and specifically not be dependent on the NIVISA library that other similar packages often have depended on.
+This package can be used to control TCP devices through SCPI. This is a forked directory and mainly for just bug testing / personal TCP instrument connections. All credit goes to the original creators ("Orchard-Ultrasound-Innovation.github.io/TcpInstruments.jl"). 
 
 This package is based on code from [GenericInstruments.jl](https://ci.appveyor.com/project/iuliancioarca/GenericInstruments-jl)
 which was again based on [Instruments.jl](https://github.com/BBN-Q/Instruments.jl). 
-
-SCPI is supported on almost all modern pieces of lab equipment and this code has during development been tested on the following devices:
-- [X] Oscilloscope Keysight DSOX4034A
-- [X] Oscilloscope Keysight DSOX4024A
-- [X] Multimeter Keysight DMM34465A
-- [X] Signal generator Keysight 33612A
-- [X] Power supply Agilent E36312A
-- [X] HV power supply SRS PS310 via Prologix GPIB to Ethernet adaptor
-- [X] Power supply Versatile Power 100-10 XR
-- [X] Impedance analyser Agilent 4294A
 
 
 <details><summary>Installation</summary>
