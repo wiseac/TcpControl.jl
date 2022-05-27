@@ -1,7 +1,7 @@
 # TcpInstruments (Forked to TcpControl)
 
 
-This package can be used to control TCP devices through SCPI. This is a forked directory and mainly for just bug testing / personal TCP instrument connections. All credit goes to the original creators ("Orchard-Ultrasound-Innovation.github.io/TcpInstruments.jl"). 
+This package can be used to control TCP devices through SCPI. This is a forked directory and mainly for just bug testing / personal TCP instrument code. All credit goes to the original creators ("Orchard-Ultrasound-Innovation.github.io/TcpInstruments.jl"). 
 
 This package is based on code from [GenericInstruments.jl](https://ci.appveyor.com/project/iuliancioarca/GenericInstruments-jl)
 which was again based on [Instruments.jl](https://github.com/BBN-Q/Instruments.jl). 
