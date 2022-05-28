@@ -47,12 +47,12 @@ abstract type Instrument end
 mutable struct Instr{ T <: Instrument } <: Instrument
     model::Union{Type, T}
     address::String
-    sock::TCPSocket
+    sock::UDPSocket
     connected::Bool
 end
 
 function CreateTcpInstr(model, address)
-    Instr{model}(model, address, TCPSocket(), false)
+    Instr{model}(model, address, UDPSocket(), false)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", i::TcpControl.Instr)
