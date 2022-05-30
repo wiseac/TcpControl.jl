@@ -1,29 +1,11 @@
-# TcpInstruments
+# TcpInstruments (Forked to TcpControl)
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://Orchard-Ultrasound-Innovation.github.io/TcpInstruments.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://orchard-ultrasound-innovation.github.io/TcpInstruments.jl/dev/)
-[![Build Status](https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl/workflows/CI/badge.svg)](https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl/actions)
-[![codecov](https://codecov.io/gh/Orchard-Ultrasound-Innovation/TcpInstruments.jl/branch/master/graph/badge.svg?token=NJAVMHUAT3)](https://codecov.io/gh/Orchard-Ultrasound-Innovation/TcpInstruments.jl)
-[![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
-[![ColPrac: Contributor's Guide on Collaborative Practices for Community Packages](https://img.shields.io/badge/ColPrac-Contributor's%20Guide-blueviolet)](https://github.com/SciML/ColPrac)
-[![License](http://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](LICENSE)
-[![GitHub commits since tagged version](https://img.shields.io/github/commits-since/Orchard-Ultrasound-Innovation/TcpInstruments.jl/v0.8.8.svg)](https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl)
-[![Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/TcpInstruments)](https://pkgs.genieframework.com?packages=TcpInstruments)
 
-Control common lab equipment via SCPI over Ethernet and specifically not be dependent on the NIVISA library that other similar packages often have depended on.
+This package can be used to control TCP devices through SCPI. This is a forked directory and mainly for just bug testing / personal TCP instrument code. All credit goes to the original creators [TcpInstruments.jl](https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl). 
 
 This package is based on code from [GenericInstruments.jl](https://ci.appveyor.com/project/iuliancioarca/GenericInstruments-jl)
 which was again based on [Instruments.jl](https://github.com/BBN-Q/Instruments.jl). 
-
-SCPI is supported on almost all modern pieces of lab equipment and this code has during development been tested on the following devices:
-- [X] Oscilloscope Keysight DSOX4034A
-- [X] Oscilloscope Keysight DSOX4024A
-- [X] Multimeter Keysight DMM34465A
-- [X] Signal generator Keysight 33612A
-- [X] Power supply Agilent E36312A
-- [X] HV power supply SRS PS310 via Prologix GPIB to Ethernet adaptor
-- [X] Power supply Versatile Power 100-10 XR
-- [X] Impedance analyser Agilent 4294A
+Further based on [TcpInstruments.jl](https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl).
 
 
 <details><summary>Installation</summary>

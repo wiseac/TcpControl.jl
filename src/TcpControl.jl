@@ -39,7 +39,7 @@ handle = initialize({Instrument-Type})
 To see the different types of devices you can interface with
 use `help>Instrument`.
 """
-module TcpInstruments
+module TcpControl
 
 using Sockets
 using Base.Threads: @spawn
