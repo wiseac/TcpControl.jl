@@ -1,11 +1,10 @@
 using InstrumentConfig
 
-const EXAMPLE_FILE = "https://raw.githubusercontent.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl/master/.tcp_instruments.yml" 
 
 const tcp_config = InstrumentConfig.Config(
     ".tcp_instruments.yml",
-    @__MODULE__
-)
+    @__MODULE__,
+	example = readdir(join = true)[1])
 
 function get_config()
     return InstrumentConfig.get_config(tcp_config)
