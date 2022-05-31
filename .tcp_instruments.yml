@@ -1,0 +1,15 @@
+# Call TcpInstruments.init_tcp_yaml() after modifying this file
+
+# Scope
+
+SDS1204XE:
+    alias: "SDSXE"
+    address: "192.168.1.94:5025"
+    
+AgilentDSOX4034A:
+    alias: "Scope350MHz"
+    address: "10.1.30.32"
+
+AgilentDSOX4024A:
+    alias: "Scope250MHz"
+    address: "10.1.30.44"
