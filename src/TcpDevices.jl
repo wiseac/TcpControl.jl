@@ -39,7 +39,7 @@ handle = initialize({Instrument-Type})
 To see the different types of devices you can interface with
 use `help>Instrument`.
 """
-module TcpControl
+module TcpDevices
 
 using Sockets
 using Base.Threads: @spawn
@@ -138,6 +138,7 @@ export AgilentDSOX4024A, AgilentDSOX4034A
 export AgilentE36312A, SRSPS310, VersatilePower
 ## Waveform Generator
 export Keysight33612A
+## MicroController
 
 export scan_network
 
