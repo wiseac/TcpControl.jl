@@ -1,11 +1,45 @@
 # Call TcpInstruments.init_tcp_yaml() after modifying this file
 
+# Digital Multimeter
+
+KeysightDMM34465A: "10.1.30.38"
+
 # Scope
 
 SDS1204XE:
     alias: "SDSXE"
     address: "192.168.1.94:5025"
     
+AgilentDSOX4034A:
+    alias: "Scope350MHz"
+    address: "10.1.30.32"
+
+AgilentDSOX4024A:
+    alias: "Scope250MHz"
+    address: "10.1.30.44"
+# Power Supply
+
+AgilentE36312A:
+    address: "10.1.30.34"
+    
+VersatilePower:
+    address: "10.1.30.35:8003"
+    
+SRSPS310:
+    prologix: 2
+    address: "10.1.30.37:1234"
+
+# Waveform Generator
+Keysight33612A: "10.1.30.47"
+
+# Impedance Analyzer
+
+Agilent4294A:
+    address: "10.1.30.39:5025"
+    
+Agilent4395A:
+    address: "10.1.30.38:1234"
+
 # MCU
 
 Teensy4.1:
