@@ -1,4 +1,4 @@
-# TcpInstruments (Forked to TcpControl)
+# TcpInstruments (Forked to TcpDevices)
 
 
 This package can be used to command devices through SCPI and TCP. This package is intended to 1) Bugtest adding new instuments for the original rep, 2) Adding some devices that are out of the original scope of the forked package (Microcontrollers, RasberryPIs, basically anything that can be connected through TCP). All credit goes to the original creators [TcpInstruments.jl](https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl). 
