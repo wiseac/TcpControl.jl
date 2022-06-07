@@ -175,6 +175,17 @@ function read(instr::Instrument)
     !instr.connected && error("Instrument is not connected, cannot read from it!")
 	return rstrip(readline(instr.sock), ['\r', '\n'])
 end
+		
+function read2(instr::Instrument)
+    !instr.connected && error("Instrument is not connected, cannot read from it!")
+		if bytesavailable(instr::Instrument) > 0
+		echomsg = String(read(instr::Instrument))
+	else
+		echomsg = "No response!"
+	end
+		echomsg1 = split.(echomsg, "\r\n")
+    return split(echomsg1[1], ", ")
+end
 
 """
 Writes a message to a device then listens for and returns any output from
