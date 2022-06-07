@@ -55,9 +55,9 @@ function CreateTcpInstr(model, address)
     Instr{model}(model, address, TCPSocket(), false)
 end
 
-function Base.show(io::IO, ::MIME"text/plain", i::TcpControl.Instr)
+function Base.show(io::IO, ::MIME"text/plain", i::TcpDevices.Instr)
     model = i.model isa DataType ? i.model : typeof(i.model)
-    println("TcpControl.Instr{$(i.model)}")
+    println("TcpDevices.Instr{$(i.model)}")
     println("    Group: $(supertype(model))")
     println("    Model: $(model)")
     println("    Address: $(i.address)")
