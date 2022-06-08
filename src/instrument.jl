@@ -156,7 +156,14 @@ function connect!(instr::Instrument)
 	SCPI_port = 5025
 	host,port = split_str_into_host_and_port(instr.address)
 	port == 0 && (port = SCPI_port)
-	instr.sock = connect(host,port)
+		@async begin
+                  server = listen(ip"host",port)
+			sleep(0.1)
+                  while true
+                     sock = accept(server)
+                  end
+               end
+	instr.sock = connect(port)
 	instr.connected = true
 end
 
