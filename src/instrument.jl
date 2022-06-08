@@ -161,7 +161,7 @@ function connect!(instr::Instrument)
                   while true
                      sock = accept(server)
                   end
-	instr.sock = connect(port)
+	instr.sock = connect(server)
 	instr.connected = true
 end
 
