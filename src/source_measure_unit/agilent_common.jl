@@ -1,5 +1,5 @@
 """
-    enable_output(obj::Instr{<:AgilentSourceMeasurementUnit})
+    enable_output(obj::Instr{<:AgilentSourceMeasureUnit})
 
 Parameters:
 
@@ -8,17 +8,17 @@ Supported Instruments:
 Returns:
     Nothing
 """
-enable_output(obj::Instr{<:AgilentSourceMeasurementUnit}) = write(obj, ":OUTP ON")
-disable_output(obj::Instr{<:AgilentSourceMeasurementUnit}) = write(obj, ":OUTP OFF")
-set_voltage_mode(obj::Instr{<:AgilentSourceMeasurementUnit}) = write(obj, ":SOUR:FUNC")
+enable_output(obj::Instr{<:AgilentSourceMeasureUnit}) = write(obj, ":OUTP ON")
+disable_output(obj::Instr{<:AgilentSourceMeasureUnit}) = write(obj, ":OUTP OFF")
+set_voltage_mode(obj::Instr{<:AgilentSourceMeasureUnit}) = write(obj, ":SOUR:FUNC")
 
 
 """
-    set_measurement_mode(obj::Instr{<:AgilentSourceMeasurementUnit};
+    set_measurement_mode(obj::Instr{<:AgilentSourceMeasureUnit};
         current=false, voltage=false, resistance=false
         )
 """
-function set_measurement_mode(obj::Instr{<:AgilentSourceMeasurementUnit};
+function set_measurement_mode(obj::Instr{<:AgilentSourceMeasureUnit};
     current=false, voltage=false, resistance=false
     )
     mode = ""
