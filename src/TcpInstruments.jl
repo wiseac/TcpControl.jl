@@ -31,7 +31,7 @@ Once you have created a config file you can change it with
 edit_config()
 ```
 
-If the instrument has its address in the config file you can now connect with: 
+If the instrument has its address in the config file you can now connect with:
 ```
 handle = initialize({Instrument-Type})
 ```
@@ -64,7 +64,7 @@ export save, load
 
 export initialize, terminate, reset
 export remote_mode, local_mode
-export query, write, info, connect!, close!
+export query, f_query, i_query, write, info, connect!, close!
 export clear_buffer
 
 # Power Supply
