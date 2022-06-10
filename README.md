@@ -135,6 +135,17 @@ julia> scan_network()
 ```
 </details>
 
+To send custom commands where no return response is expected use the `write()` function:
+```julia
+julia> write(instr, "<SCPI command>")
+```
+
+If the devive is sending a response to the command use `query()` instead:
+```julia
+julia> response = query(instr, "<SCPI command>")
+```
+The convenience functions `f_query()` and `i_query()` parse the response string to a `Float64` and `Int64`, respectively.
+
 ## Units
 <details><summary>This package uses Unitful.</summary> 
 
