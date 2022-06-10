@@ -31,7 +31,7 @@ Once you have created a config file you can change it with
 edit_config()
 ```
 
-If the instrument has its address in the config file you can now connect with: 
+If the instrument has its address in the config file you can now connect with:
 ```
 handle = initialize({Instrument-Type})
 ```
@@ -156,6 +156,7 @@ include("power_supply/all.jl")
 include("waveform_generator/all.jl")
 include("impedance_analyzer/all.jl")
 include("multimeter/all.jl")
+include("source_measure_unit/all.jl")
 
 include("emulator/emulator.jl")
 end #endmodule
