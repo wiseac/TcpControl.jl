@@ -192,32 +192,34 @@ error will be thrown.
 function query(instr::Instrument, message::AbstractString; timeout=2.8)
     write(instr, message)
     if timeout == 0
-        return read(instr)
-    end
-    proc = @spawn read(instr)
-    start_clock = time()
-    while (time() - start_clock) < timeout
-        if proc.state != :runnable
-            break
+        retval = read(instr)
+    else
+        proc = @spawn read(instr)
+        start_clock = time()
+        while (time() - start_clock) < timeout
+            if proc.state != :runnable
+                break
+            end
+            sleep(0.05)
         end
-        sleep(0.05)
+        if proc.state == :runnable
+            schedule(proc, ErrorException("Query timed out"), error=true)
+            error("Query timed out")
+        end
+        retval = fetch(proc)
     end
-    if proc.state == :runnable
-        schedule(proc, ErrorException("Query timed out"), error=true)
-        error("Query timed out")
-    end
-    return fetch(proc)
+    return retval
 end
 
 """
 Differs from [query](@ref) in that it will return a Float64 and not a String
 """
-f_query(obj, ins; timeout=0.5) = parse(Float64, query(obj, ins; timeout=timeout))
+f_query(instr::Instrument, message; timeout=0.5) = parse(Float64, query(instr, message; timeout=timeout))
 
 """
 Differs from [query](@ref) in that it will return an Int64 and not a String
 """
-i_query(obj, ins; timeout=0.5) = parse(Int64, query(obj, ins; timeout=timeout))
+i_query(instr::Instrument, message; timeout=0.5) = parse(Int64, query(instr, message; timeout=timeout))
 
 
 """
