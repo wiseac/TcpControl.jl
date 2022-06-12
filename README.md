@@ -140,7 +140,7 @@ To send custom commands where no return response is expected use the `write()` f
 julia> write(instr, "<SCPI command>")
 ```
 
-If the devive is sending a response to the command use `query()` instead:
+If the device is sending a response to the command use `query()` instead:
 ```julia
 julia> response = query(instr, "<SCPI command>")
 ```
