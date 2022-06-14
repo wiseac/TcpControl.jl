@@ -10,7 +10,10 @@ function get_data(instr::Instr{<:AgilentScope})
     ch_vec = get_valid_channels(instr)
     @info "Loading channels: $ch_vec"
     return get_data(instr, ch_vec; check_channels=false)
-end 
+end
+
+get_valid_channels(instr::Instr{AgilentDSOX4024A}) = [1:4]
+get_valid_channels(instr::Instr{AgilentDSOX4034A}) = [1:4]
 
 function get_valid_channels(instr::Instr{<:AgilentScope})
     statuses = asyncmap(x->(x, channel_is_displayed(instr, x)), 1:4)
@@ -18,6 +21,8 @@ function get_valid_channels(instr::Instr{<:AgilentScope})
     valid_channels = map(x -> x[begin], statuses)
     return valid_channels
 end
+channel_is_displayed(instr::Instr{<:AgilentScope}, chan) = query(instr, "STAT? CHAN$chan") == "1" ? true : false
+
 
 function get_data(instr::Instr{<:AgilentScope}, ch_vec::Vector{Int}; check_channels=true)
     if check_channels
@@ -280,13 +285,12 @@ run(instr::Instr{<:AgilentScope}) = write(instr, "RUN")
 
 """
     stop(scope)
-    
+
 Stop Oscilloscope
 """
 stop(instr::Instr{<:AgilentScope}) = write(instr, "STOP")
 
 
-channel_is_displayed(instr::Instr{<:AgilentScope}, chan) = query(instr, "STAT? CHAN$chan") == "1" ? true : false
 get_waveform_preamble(instr::Instr{<:AgilentScope}) = query(instr, "WAVEFORM:PREAMBLE?")
 get_waveform_source(instr::Instr{<:AgilentScope}) = query(instr, "WAVEFORM:SOURCE?")
 
@@ -307,7 +311,7 @@ Set which data to transfer when using `get_data`(@ref)
 
 Inputs:
 `scope`: handle to the connected oscilloscope
-`mode`: 
+`mode`:
 - `:NORMAL`: transfer the measurement data
 - `:RAW`: transfer the raw acquisition data
 """
