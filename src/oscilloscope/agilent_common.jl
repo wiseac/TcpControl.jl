@@ -12,8 +12,8 @@ function get_data(instr::Instr{<:AgilentScope})
     return get_data(instr, ch_vec; check_channels=false)
 end
 
-get_valid_channels(instr::Instr{AgilentDSOX4024A}) = [1:4]
-get_valid_channels(instr::Instr{AgilentDSOX4034A}) = [1:4]
+get_valid_channels(instr::Instr{AgilentDSOX4024A}) = collect([1:4])
+get_valid_channels(instr::Instr{AgilentDSOX4034A}) = collect([1:4])
 
 function get_valid_channels(instr::Instr{<:AgilentScope})
     statuses = asyncmap(x->(x, channel_is_displayed(instr, x)), 1:4)
