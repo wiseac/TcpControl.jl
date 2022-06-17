@@ -58,7 +58,7 @@ const A = u"A"
 const Hz = u"Hz"
 
 export Instrument
-export Oscilloscope, Multimeter, PowerSupply, WaveformGenerator, ImpedanceAnalyzer
+export Oscilloscope, Multimeter, PowerSupply, WaveformGenerator, ImpedanceAnalyzer, SourceMeasureUnit
 
 export save, load
 
@@ -125,7 +125,12 @@ export get_voltage_offset, set_voltage_offset
 export get_burst_period, set_burst_period
 export get_mode, set_mode_burst, set_mode_cw
 
-
+# Source Measure Unit
+export enable_output, disable_output
+export set_voltage_mode, set_output_voltage, set_voltage_limit
+export set_current_mode, set_output_current, set_current_limit
+export set_measurement_mode
+export spot_measurement
 
 # Devices
 ## Impedance Analyzer
@@ -138,6 +143,8 @@ export AgilentDSOX4024A, AgilentDSOX4034A
 export AgilentE36312A, SRSPS310, VersatilePower
 ## Waveform Generator
 export Keysight33612A
+## Source Measure Unit
+export AgilentB2910BL
 
 export scan_network
 
