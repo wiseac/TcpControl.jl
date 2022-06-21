@@ -12,12 +12,12 @@ enable_output()
 disable_output()
 
 set_voltage_mode()
-set_output_voltage
-set_voltage_limit
+set_output_voltage()
+set_voltage_limit()
 
-set_voltage_mode(x)
-set_output_voltage
-set_voltage_limit
+set_voltage_mode()
+set_output_voltage()
+set_voltage_limit()
 
 set_measurement_mode()
 spot_measurement()
@@ -39,8 +39,8 @@ end
     set_voltage_mode(smu)
     @test query(smu, ":SOUR:FUNC:MODE?") == "VOLT"
 
-    set_output_voltage(smu, 3.0*u"V")
-    @test f_query(smu, "SOUR:VOLT:LEV:IMM:AMPL?") == 3.0
+    set_output_voltage(smu, 3.3*u"V")
+    @test f_query(smu, "SOUR:VOLT:LEV:IMM:AMPL?") == 3.3
 
     set_voltage_limit(smu, 5.0*u"V")
     @test f_query(smu, "SENS:VOLT:PROT?") == 5.0
@@ -52,24 +52,11 @@ end
     set_current_mode(smu)
     @test query(smu, ":SOUR:FUNC:MODE?") == "CURR"
 
-    set_output_current(smu, 3.0*u"A")
-    @test f_query(smu, "SOUR:CURR:LEV:IMM:AMPL?") == 3.0
+    set_output_current(smu, 1.0*u"A")
+    @test f_query(smu, "SOUR:CURR:LEV:IMM:AMPL?") == 1.0
 
-    set_current_limit(smu, 3.0*u"A")
-    @test f_query(smu, "SENS:CURR:PROT?") == 3.0
-
-end
-
-@testset "Current" begin
-
-    set_current_mode(smu)
-    @test query(smu, ":SOUR:FUNC:MODE?") == "CURR"
-
-    set_output_current(smu, 3.0*u"A")
-    @test f_query(smu, "SOUR:CURR:LEV:IMM:AMPL?") == 3.0
-
-    set_current_limit(smu, 3.0*u"A")
-    @test f_query(smu, "SENS:CURR:PROT?") == 3.0
+    set_current_limit(smu, 1.5*u"A")
+    @test f_query(smu, "SENS:CURR:PROT?") == 1.5
 
 end
 
@@ -101,10 +88,6 @@ end
      @test TcpInstruments.verify_source_type("VOLT") == false
      @test TcpInstruments.verify_source_type("CURR") == false
 
-     @test TcpInstruments.verify_source_mode("FIX") == false
-     @test TcpInstruments.verify_source_mode("LIST") == false
-     @test TcpInstruments.verify_source_mode("SWE") == false
-
      @test TcpInstruments.verify_value_specifier("MAX") == false
      @test TcpInstruments.verify_value_specifier("MIN") == false
      @test TcpInstruments.verify_value_specifier("DEF") == false
@@ -112,4 +95,15 @@ end
      @test TcpInstruments.attach_unit!(1, "VOLT") isa Unitful.Voltage
      @test TcpInstruments.attach_unit!(1, "CURR") isa Unitful.Current
 
+     @testset "add_mode!" begin
+        mode = String[]
+        TcpInstruments.add_mode!(mode, "VOLT")
+        @test join(mode) == "\"VOLT\""
+        
+        TcpInstruments.add_mode!(mode, "CURR")
+        @test join(mode) == "\"VOLT\",\"CURR\""
+
+        TcpInstruments.add_mode!(mode, "RES")
+        @test join(mode) == "\"VOLT\",\"CURR\",\"RES\""
+     end
 end

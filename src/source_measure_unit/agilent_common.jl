@@ -7,10 +7,7 @@
     - obj
         - must be a Source Measure Unit Instrument
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 
 """
 enable_output(obj::Instr{<:AgilentSourceMeasureUnit}; channel = 1) = write(obj, ":OUTP$channel ON")
@@ -24,10 +21,7 @@ enable_output(obj::Instr{<:AgilentSourceMeasureUnit}; channel = 1) = write(obj, 
     - obj
         - must be a Source Measure Unit Instrument
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 
 """
 disable_output(obj::Instr{<:AgilentSourceMeasureUnit}; channel = 1) = write(obj, ":OUTP$channel OFF")
@@ -41,10 +35,7 @@ disable_output(obj::Instr{<:AgilentSourceMeasureUnit}; channel = 1) = write(obj,
     - obj
         - must be a Source Measure Unit Instrument
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 
 """
 set_voltage_mode(obj::Instr{<:AgilentSourceMeasureUnit}; channel = 1) = write(obj, ":SOUR$channel:FUNC:MODE VOLT")
@@ -58,10 +49,7 @@ set_current_mode(obj::Instr{<:AgilentSourceMeasureUnit}; channel = 1)
     - obj
         - must be a Source Measure Unit Instrument
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 
 """
 set_current_mode(obj::Instr{<:AgilentSourceMeasureUnit}; channel = 1) = write(obj, ":SOUR$channel:FUNC:MODE CURR")
@@ -77,10 +65,7 @@ set_current_mode(obj::Instr{<:AgilentSourceMeasureUnit}; channel = 1) = write(ob
     - current
         - as described in Unitful Package
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 
 """
 set_output_current(obj::Instr{<:AgilentSourceMeasureUnit}, current::Unitful.Current; channel = 1) = write(obj, ":SOUR$channel:CURR $(raw(current))")
@@ -96,10 +81,7 @@ set_output_current(obj::Instr{<:AgilentSourceMeasureUnit}, current::Unitful.Curr
     - current
         - "MIN" | "MAX" | "DEF" (Default)
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 
 """
 function set_output_current(obj::Instr{<:AgilentSourceMeasureUnit}, current::String = "DEF" ;channel = 1)
@@ -118,10 +100,7 @@ end
     - voltage
         - as described in Unitful Package
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 
 """
 set_output_voltage(obj::Instr{<:AgilentSourceMeasureUnit}, voltage::Unitful.Voltage; channel = 1) = write(obj, ":SOUR$channel:VOLT $(raw(voltage))")
@@ -137,10 +116,7 @@ set_output_voltage(obj::Instr{<:AgilentSourceMeasureUnit}, voltage::String; chan
     - voltage
         - "MIN" | "MAX" | "DEF" (Default)
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 """
 function set_output_voltage(obj::Instr{<:AgilentSourceMeasureUnit}, voltage::String = "DEF" ; channel = 1)
     verify_value_specifier(voltage)
@@ -158,10 +134,7 @@ end
     - current
         - as described in Unitful Package
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 """
 set_current_limit(obj::Instr{<:AgilentSourceMeasureUnit}, current::Unitful.Current; channel = 1) = write(obj, ":SENS$channel:CURR:PROT $(raw(current))")
 
@@ -176,10 +149,7 @@ set_current_limit(obj::Instr{<:AgilentSourceMeasureUnit}, current::Unitful.Curre
     - current
         - "MIN" | "MAX" | "DEF" (Default)
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 """
 function set_current_limit(obj::Instr{<:AgilentSourceMeasureUnit}, current::String = "DEF" ; channel = 1)
     verify_value_specifier(current)
@@ -197,10 +167,7 @@ end
     - voltage
         - as described in Unitful Package
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 """
 set_voltage_limit(obj::Instr{<:AgilentSourceMeasureUnit}, voltage::Unitful.Voltage; channel = 1) = write(obj, ":SENS$channel:VOLT:PROT $(raw(voltage))")
 
@@ -215,10 +182,7 @@ set_voltage_limit(obj::Instr{<:AgilentSourceMeasureUnit}, voltage::Unitful.Volta
     - voltage
         - "MIN" | "MAX" | "DEF" (Default)
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 """
 function set_voltage_limit(obj::Instr{<:AgilentSourceMeasureUnit}, voltage::String = "DEF" ; channel = 1)
     verify_value_specifier(voltage)
@@ -232,6 +196,7 @@ end
     )
 
     This will enable the selected channel's specified measurement functions.
+    Enabling resistance will enable voltage and current measurement modes as well.
 
     Parameters:
     - obj
@@ -243,33 +208,29 @@ end
     - resistance
         - true | false (Default)
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 """
 function set_measurement_mode(obj::Instr{<:AgilentSourceMeasureUnit};
     voltage=false, current=false, resistance=false, channel=1
     )
 
-    mode = ""
-
-    if voltage
-        mode = "\"VOLT\""
-        current && (mode = mode * ",\"CURR\"")
-        resistance && (mode = mode * ",\"RES\"")
-    elseif current
-        mode = "\"CURR\""
-        resistance && (mode = mode * ",\"RES\"")
-    elseif resistance
-        mode = "\"RES\""
-    end
+    mode = String[]
+    voltage && add_mode!(mode, "VOLT")
+    current && add_mode!(mode, "CURR")
+    resistance && add_mode!(mode, "RES")
+    mode = join(mode)
 
     isempty(mode) && error("The mode was empty. You must set one or more of the input arguments: current, voltage, and resistance to true.")
 
     write(obj, ":SENS$channel:FUNC:OFF:ALL")
     write(obj, ":SENS$channel:FUNC $mode")
+    return nothing
+end
 
+function add_mode!(buffer, mode)
+    isempty(buffer) ? pre = "\"" : pre = ",\""
+    post = "\""
+    push!(buffer, pre*mode*post)
     return nothing
 end
 
@@ -286,10 +247,7 @@ end
     - type
         - "CURR" | "RES" | "VOLT" (Default)
     - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 
 """
 function spot_measurement(obj::Instr{<:AgilentSourceMeasureUnit};
@@ -303,48 +261,6 @@ end
 
 verify_measurement_type(type) =  !(type in ["VOLT", "CURR", "RES"]) && error("Measurement type \"$type\" is not valid!\nIt's value must be \"VOLT\", \"CURR\", or \"RES\".")
 
-"""
-    set_source_mode(obj::Instr{<:AgilentSourceMeasureUnit};
-        type = "VOLT",
-        mode = "FIX",
-        channel = 1
-    )
-
-    Selects the source mode, fixed list sweep, or sweep, of the specified source channel.
-
-    Parameters:
-    - obj
-        - must be a Source Measure Unit Instrument
-    - type
-        - "CURR" | "VOLT" (Default)
-    - mode
-        - "FIX" (Default) | "LIST" | "SWE"
-        - FIX sets the constant current or voltage source.
-        - LIST sets the user-specified current or voltage list sweep source. Specified by set_sweep_steps()
-        - SWEep sets the current or voltage sweep source. Specified by set_list_sweep()
-    - channel
-        - This is an optional parameter
-        - If not provided it will use the default channel 1
-        - Otherwise this can be an int: 1, 2, 3 .. to n
-        where n is the total number of channels
-
-"""
-function set_source_mode(obj::Instr{<:AgilentSourceMeasureUnit};
-    type="VOLT", mode="FIX", channel=1
-    )
-
-    verify_source_type(type)
-    verify_source_mode(mode)
-
-    write(obj, ":SOUR$channel :$type:MODE $mode")
-    return nothing
-end
-
-verify_source_type(type) = !(type in ["VOLT", "CURR"]) && error("Source type \"$type\" is not valid!\nIt's value must be \"VOLT\" or \"CURR\".")
-verify_source_mode(mode) = !(mode in ["FIX", "LIST", "SWE"]) && error("Source mode \"$mode\" is not valid!\nIt's value must be \"FIX\", \"LIST\", or \"SWE\".")
-
-
-
 function attach_unit!(value, unit)
     if unit == "VOLT"
         value = value * V
@@ -357,12 +273,8 @@ function attach_unit!(value, unit)
     return value
 end
 
-function add_mode!(buffer, mode)
-    isempty(buffer) ? pre = "\"" : pre = ",\""
-    post = "\""
-    buffer = buffer*pre*mode*post
-end
-
+verify_source_type(type) = !(type in ["VOLT", "CURR"]) && error("Source type \"$type\" is not valid!\nIt's value must be \"VOLT\" or \"CURR\".")
+verify_source_mode(mode) = !(mode in ["FIX", "LIST", "SWE"]) && error("Source mode \"$mode\" is not valid!\nIt's value must be \"FIX\", \"LIST\", or \"SWE\".")
 verify_value_specifier(value) = !(value in ["MIN", "MAX", "DEF"]) && error("Value specifier \"$value\" is not valid!\nIt's value must be \"MIN\", \"MAX\", or \"DEF\".")
 #=
 TODO - Functions to implement:
