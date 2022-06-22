@@ -131,6 +131,7 @@ export set_voltage_mode, set_output_voltage, set_voltage_limit
 export set_current_mode, set_output_current, set_current_limit
 export set_measurement_mode
 export spot_measurement
+export enable_autorange, disable_autorange
 
 # Devices
 ## Impedance Analyzer

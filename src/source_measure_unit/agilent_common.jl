@@ -221,7 +221,6 @@ function set_measurement_mode(obj::Instr{<:AgilentSourceMeasureUnit};
     mode = join(mode)
 
     isempty(mode) && error("The mode was empty. You must set one or more of the input arguments: current, voltage, and resistance to true.")
-
     write(obj, ":SENS$channel:FUNC:OFF:ALL")
     write(obj, ":SENS$channel:FUNC $mode")
     return nothing
@@ -235,9 +234,7 @@ function add_mode!(buffer, mode)
 end
 
 """
-    spot_measurement(obj::Instr{<:AgilentSourceMeasureUnit};
-        type="VOLT", channel=1
-    )
+    spot_measurement(obj::Instr{<:AgilentSourceMeasureUnit}, type="VOLT"; channel=1)
 
     Executes a spot (one-shot) measurement and returns the measurement result data.
 
@@ -250,13 +247,35 @@ end
         - Valid values are positive integers 1 to N, where N is the number of channels on the device.
 
 """
-function spot_measurement(obj::Instr{<:AgilentSourceMeasureUnit};
-    type="VOLT", channel=1
-    )
-
+function spot_measurement(obj::Instr{<:AgilentSourceMeasureUnit}, type="VOLT"; channel=1)
     verify_measurement_type(type)
     val  = f_query(obj, "MEAS:$type? (@$channel)"; timeout = 0)
     return attach_unit!(val, type)
+end
+
+"""
+    spot_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel=1)
+
+    Executes a spot (one-shot) measurement and returns valid voltage, current, and resistance if type is not specified.
+
+    Parameters:
+    - obj
+        - must be a Source Measure Unit Instrument
+    - channel
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
+    
+"""
+function spot_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel=1)
+
+    write(obj, ":FORM:ELEM:SENS VOLT,CURR,RES")
+    val = query(obj, ":MEAS? (@$channel)"; timeout = 0)
+
+    val = split(val, ",")
+    val = parse.(Float64, val)
+    val = val[1] * V, val[2] * A, val[3] * R
+    val = filter( x -> x/oneunit(x) != 9.91e37, val)
+
+    return val
 end
 
 verify_measurement_type(type) =  !(type in ["VOLT", "CURR", "RES"]) && error("Measurement type \"$type\" is not valid!\nIt's value must be \"VOLT\", \"CURR\", or \"RES\".")
@@ -267,7 +286,7 @@ function attach_unit!(value, unit)
     elseif unit == "CURR"
         value = value * A
     elseif unit == "RES"
-        value = value * R
+        value = value * R 
     end
 
     return value
@@ -276,14 +295,55 @@ end
 verify_source_type(type) = !(type in ["VOLT", "CURR"]) && error("Source type \"$type\" is not valid!\nIt's value must be \"VOLT\" or \"CURR\".")
 verify_source_mode(mode) = !(mode in ["FIX", "LIST", "SWE"]) && error("Source mode \"$mode\" is not valid!\nIt's value must be \"FIX\", \"LIST\", or \"SWE\".")
 verify_value_specifier(value) = !(value in ["MIN", "MAX", "DEF"]) && error("Value specifier \"$value\" is not valid!\nIt's value must be \"MIN\", \"MAX\", or \"DEF\".")
+
+"""
+    enable_autorange(obj::Instr{<:AgilentSourceMeasureUnit}; mode ="VOLT", channel = 1)
+
+    This will enable an output channel's automatic ranging. 
+ 
+    Parameters:
+    - obj
+        - must be a Source Measure Unit Instrument
+    - type
+        - "CURR" | "VOLT" (Default)
+    - channel
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
+
+"""
+function enable_autorange(obj::Instr{<:AgilentSourceMeasureUnit}; mode ="VOLT", channel = 1)
+    verify_source_type(mode)
+    write(obj, "SOUR$channel:$mode:RANG:AUTO ON")
+end
+
+"""
+    disable_autorange(obj::Instr{<:AgilentSourceMeasureUnit}; mode ="VOLT", channel = 1)
+
+    This will disable an output channel's automatic ranging. If automatic ranging disabled, the source output 
+    is performed using the range set [SOURce]:<CURRent|VOLTage>:RANGe command.
+ 
+    Parameters:
+    - obj
+        - must be a Source Measure Unit Instrument
+    - type
+        - "CURR" | "VOLT" (Default)
+    - channel
+        - Valid values are positive integers 1 to N, where N is the number of channels on the device.
+
+"""
+function disable_autorange(obj::Instr{<:AgilentSourceMeasureUnit}; mode ="VOLT", channel = 1)
+    verify_source_type(mode)
+    write(obj, "SOUR$channel:$mode:RANG:AUTO OFF")
+end
+
 #=
 TODO - Functions to implement:
-- [`set_source_mode`](@ref)
-- [`set_current_or_voltage`](@ref)
-- [`set_limit`](@ref)
+
+- [`set_to_sweep_mode`](@ref)
+- [`set_sweep_start`](@ref)
+- [`set_sweep_stop`](@ref)
+- [`set_sweep_step`](@ref)
+- [`set_measurement_range`](@ref)
+- [`set_measurement_time`](@ref)
 - [`get_measurement`](@ref)
-- [`enable_autorange`](@ref)
-- [`disable_autorange`](@ref)
-- [`set_measurement_time`](@ref)
-- [`set_measurement_time`](@ref)
+- [`start_measurement`](@ref)
 =#

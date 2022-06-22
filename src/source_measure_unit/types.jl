@@ -14,17 +14,27 @@ Supported functions
 
 - [`enable_output`](@ref)
 - [`disable_output`](@ref)
-- [`set_source_mode`](@ref)
-- [`set_current_or_voltage`](@ref)
-- [`set_limit`](@ref)
+- [`set_voltage_mode`](@ref)
+- [`set_output_voltage`](@ref)
+- [`set_voltage_limit`](@ref)
+- [`set_current_mode`](@ref)
+- [`set_output_current`](@ref)
+- [`set_current_limit`](@ref)
 - [`set_measurement_mode`](@ref)
-- [`get_measurement`](@ref)
 - [`enable_autorange`](@ref)
 - [`disable_autorange`](@ref)
-- [`set_measurement_time`](@ref)
-- [`set_measurement_time`](@ref)
 
-
+#=
+TODO - Functions to implement:
+- [`set_to_sweep_mode`](@ref)
+- [`set_sweep_start`](@ref)
+- [`set_sweep_stop`](@ref)
+- [`set_sweep_step`](@ref)
+- [`set_measurement_range`](@ref)
+- [`set_measurement_time`](@ref)
+- [`get_measurement`](@ref)
+- [`start_measurement`](@ref)
+=#
 """
 abstract type AgilentSourceMeasureUnit <: SourceMeasureUnit end
 struct AgilentB2910BL <: AgilentSourceMeasureUnit end
