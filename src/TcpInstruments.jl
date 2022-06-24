@@ -56,6 +56,7 @@ const R = u"Ω"
 const V = u"V"
 const A = u"A"
 const Hz = u"Hz"
+const NaN = 9.91e37
 
 export Instrument
 export Oscilloscope, Multimeter, PowerSupply, WaveformGenerator, ImpedanceAnalyzer, SourceMeasureUnit
@@ -127,11 +128,15 @@ export get_mode, set_mode_burst, set_mode_cw
 
 # Source Measure Unit
 export enable_output, disable_output
-export set_voltage_mode, set_output_voltage, set_voltage_limit
-export set_current_mode, set_output_current, set_current_limit
-export set_measurement_mode
-export spot_measurement
+export set_to_sweep_mode
+export set_measurement_mode, spot_measurement
 export enable_autorange, disable_autorange
+export set_measurement_range, set_measurement_time, start_measurement
+export set_voltage_mode, set_voltage_output, set_voltage_limit
+export set_voltage_sweep_start, set_voltage_sweep_stop, set_voltage_sweep_step
+export set_current_mode, set_current_output, set_current_limit
+export set_current_sweep_start, set_current_sweep_stop, set_current_sweep_step
+export get_measurement, start_measurement
 
 # Devices
 ## Impedance Analyzer
