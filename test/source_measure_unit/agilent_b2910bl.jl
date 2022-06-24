@@ -16,8 +16,8 @@ Spec:
     set_voltage_mode()
     set_voltage_output()
     set_voltage_limit()
-    set_current_mode()
 
+    set_current_mode()
     set_current_output()
     set_current_limit()
 
@@ -36,9 +36,9 @@ Spec:
 
     set_measurement_range()
     set_measurement_time()
-
     get_measurement()
     start_measurement()
+    
 """
 
 
@@ -226,7 +226,7 @@ end
 
 @testset "Get Measurement" begin
     TcpInstruments.instrument_reset(smu)
-    
+
     start_measurement(smu)
     data = get_measurement(smu)
     @test data isa Tuple
