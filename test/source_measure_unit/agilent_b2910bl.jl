@@ -6,39 +6,40 @@ smu = initialize(AgilentB2910BL)
 TcpInstruments.instrument_reset(smu)
 @info "Successfully connected $(smu.model) at $(smu.address)"
 
-
 """
 Spec:
 
     enable_output()
     disable_output()
 
-    set_voltage_mode()
-    set_voltage_output()
-    set_voltage_limit()
+    set_source()
+    get_source()
 
-    set_current_mode()
-    set_current_output()
-    set_current_limit()
+    set_source_mode()
+    get_source_mode()
 
     set_measurement_mode()
     spot_measurement()
 
-    enable_autorange()
-    disable_autorange()
+    set_measurement_range()
+    set_measurement_duration()
 
-    set_to_sweep_mode()
+    set_voltage_output()
+    set_voltage_limit()
+
+    set_current_output()
+    set_current_limit()
+
+    set_source_mode()
     set_voltage_sweep_start()
     set_voltage_sweep_stop()
     set_current_sweep_start()
     set_current_sweep_stop()
     set_current_sweep_step()
 
-    set_measurement_range()
-    set_measurement_time()
-    get_measurement()
     start_measurement()
-    
+    get_measurement()
+
 """
 
 
@@ -51,8 +52,8 @@ Spec:
 end
 
 @testset "Voltage" begin
-    set_voltage_mode(smu)
-    @test query(smu, ":SOUR:FUNC:MODE?") == "VOLT"
+    set_source(smu; source="VOLT")
+    @test get_source(smu) == "VOLT"
 
     set_voltage_output(smu, 3.3*u"V")
     @test f_query(smu, "SOUR:VOLT:LEV:IMM:AMPL?") == 3.3
@@ -76,8 +77,8 @@ end
 end
 
 @testset "Current" begin
-    set_current_mode(smu)
-    @test query(smu, ":SOUR:FUNC:MODE?") == "CURR"
+    set_source(smu; source="CURR")
+    @test get_source(smu) == "CURR"
 
     set_current_output(smu, 0.33*u"A")
     @test f_query(smu, "SOUR:CURR:LEV:IMM:AMPL?") == 0.33
@@ -102,29 +103,29 @@ end
 
 @testset "Measurement Mode" begin
 
-    set_measurement_mode(smu; voltage = true, current = true, resistance = true)
+    set_measurement_mode(smu; voltage=true, current=true, resistance=true)
     @test query(smu, ":SENS:FUNC?") == "\"VOLT\",\"CURR\",\"RES\""
 
-    set_measurement_mode(smu; voltage = true)
+    set_measurement_mode(smu; voltage=true)
     @test query(smu, ":SENS:FUNC?") == "\"VOLT\""
 
-    set_measurement_mode(smu; current = true)
+    set_measurement_mode(smu; current=true)
     @test query(smu, ":SENS:FUNC?") == "\"CURR\""
 
-    set_measurement_mode(smu; resistance = true)
+    set_measurement_mode(smu; resistance=true)
     @test query(smu, ":SENS:FUNC?") == "\"VOLT\",\"CURR\",\"RES\""
 
-    set_measurement_mode(smu; voltage = true, current = true)
+    set_measurement_mode(smu; voltage=true, current=true)
     @test query(smu, ":SENS:FUNC?") == "\"VOLT\",\"CURR\""
 
-    @test_throws ErrorException  set_measurement_mode(smu)
+    @test_throws ErrorException set_measurement_mode(smu)
 end
 
 @testset "Spot Measurement" begin
 
     @test spot_measurement(smu, "VOLT") isa Unitful.Voltage
     @test spot_measurement(smu, "CURR") isa Unitful.Current
-    @test spot_measurement(smu, "RES") isa Number
+    @test spot_measurement(smu, "RES") isa Resistance
     @test_throws ErrorException  spot_measurement(smu, "Throw")
    
     @test spot_measurement(smu) isa Tuple
@@ -133,13 +134,13 @@ end
 @testset "Set measurement mode and get data " begin
     TcpInstruments.instrument_reset(smu)
 
-    set_measurement_mode(smu; voltage = true)
+    set_measurement_mode(smu; voltage=true)
     data = spot_measurement(smu)
     @test data[1] isa Unitful.Voltage
     @test_throws BoundsError data[2] isa Unitful.Current
     @info data
 
-    set_measurement_mode(smu; current = true)
+    set_measurement_mode(smu; current=true)
     data = spot_measurement(smu)
     @test data[1] isa Unitful.Current
     @test_throws BoundsError data[2] isa Unitful.Voltage
@@ -149,79 +150,89 @@ end
     data = spot_measurement(smu)
     @test data[1] isa Unitful.Voltage
     @test data[2] isa Unitful.Current
-    @test data[3] isa Number
+    @test data[3] isa Resistance
     @test_throws BoundsError data[4] isa Number
     @info data
 end
 
 @testset "Autorange" begin
 
-    enable_autorange(smu; source = "VOLT")
+    enable_autorange(smu; source="VOLT")
     @test query(smu, "SOUR:VOLT:RANG:AUTO?") == "1"
-    disable_autorange(smu, source = "VOLT")
+    disable_autorange(smu, source="VOLT")
     @test query(smu, "SOUR:VOLT:RANG:AUTO?") == "0"
     
-    enable_autorange(smu, source = "CURR")
+    enable_autorange(smu, source="CURR")
     @test query(smu, "SOUR:CURR:RANG:AUTO?") == "1"
-    disable_autorange(smu, source = "CURR")
+    disable_autorange(smu, source="CURR")
     @test query(smu, "SOUR:CURR:RANG:AUTO?") == "0"
 
     @test_throws ErrorException enable_autorange(smu; source = "RES")
 end
 
+@testset "Fixed Mode" begin
+    set_source_mode(smu; source="VOLT", mode="FIX")
+    @test get_source_mode(smu; source="VOLT") == "FIX"
+
+    set_source_mode(smu; source="CURR", mode="FIX")
+    @test get_source_mode(smu; source="CURR") == "FIX"
+end
+
 @testset "Sweep Mode" begin
 
-    set_to_sweep_mode(smu; source = "VOLT")
-    @test query(smu, "SOUR:VOLT:MODE?") == "SWE"
+    set_source_mode(smu; source="VOLT", mode="SWE")
+    @test get_source_mode(smu; source="VOLT") == "SWE"
+    
+    set_source_mode(smu; source="CURR", mode="SWE")
+    @test get_source_mode(smu; source="CURR") == "SWE"
 
-    set_to_sweep_mode(smu; source = "CURR")
-    @test query(smu, "SOUR:CURR:MODE?") == "SWE"
-
-    set_voltage_sweep_start(smu; start = -1*u"V")
+    set_voltage_sweep_start(smu; start=-1u"V")
     @test f_query(smu, "SOUR:VOLT:START?") == -1.0
 
-    set_voltage_sweep_start(smu; start = "MIN")
+    set_voltage_sweep_start(smu; start="MIN")
     @test f_query(smu, "SOUR:VOLT:START?") != -1.0
 
-    set_voltage_sweep_stop(smu; stop = 1*u"V")
+    set_voltage_sweep_stop(smu; stop=1u"V")
     @test f_query(smu, "SOUR:VOLT:STOP?") == 1.0
 
-    set_voltage_sweep_stop(smu; stop = "MAX")
+    set_voltage_sweep_stop(smu; stop="MAX")
     @test f_query(smu, "SOUR:VOLT:STOP?") != 1.0
 
-    set_voltage_sweep_step(smu; step = 0.5*u"V")
+    set_voltage_sweep_step(smu; step=0.5u"V")
     @test f_query(smu, "SOUR:VOLT:STEP?") == 0.5
 
-    set_voltage_sweep_step(smu; step = "MAX")
+    set_voltage_sweep_step(smu; step="MAX")
     @test f_query(smu, "SOUR:VOLT:STEP?") != 0.5
 end
 
 @testset "Measurement Range" begin
 
-    set_measurement_range(smu; measurement = "VOLT", range = 1 )
-    set_measurement_range(smu; measurement = "VOLT", range = "MAX")
+    set_measurement_range(smu, 1u"V")
+    set_measurement_range(smu, measurement="VOLT", range="MAX")
     @test f_query(smu, "SENS:VOLT:RANGE?") != 1
-
-    set_measurement_range(smu; measurement = "CURR", range = 1 )
-    set_measurement_range(smu; measurement = "CURR", range = "MAX")
+    
+    set_measurement_range(smu, 1u"A")
+    set_measurement_range(smu, measurement="CURR", range="MAX")
     @test f_query(smu, "SENS:CURR:RANGE?") != 1
 
-    set_measurement_range(smu; measurement = "RES", range = 1 )
-    set_measurement_range(smu; measurement = "RES", range = "MAX")
+    set_measurement_range(smu, 1u"Ω")
+    set_measurement_range(smu, measurement="RES", range="MAX")
     @test f_query(smu, "SENS:RES:RANGE?") != 1
 
-    @test_throws ErrorException set_measurement_range(smu, measurement = "Throw")
+    @test_throws ErrorException set_measurement_range(smu, 1)
+    @test_throws ErrorException set_measurement_range(smu, measurement="VOLT", range="Throw")
+
 end
 
-@testset "Measurement Time" begin
+@testset "Measurement Duration" begin
 
-    set_measurement_time(smu; aperture = 0.5u"s")
+    set_measurement_duration(smu; aperture=0.5u"s")
     @test f_query(smu, "SENS:VOLT:APER?") == 0.5
 
-    set_measurement_time(smu; aperture = "MAX")
+    set_measurement_duration(smu; aperture="MAX")
     @test f_query(smu, "SENS:VOLT:APER?") != 0.5
 
-    @test_throws ErrorException set_measurement_time(smu; aperture = 0.5)
+    @test_throws ErrorException set_measurement_duration(smu; aperture = 0.5)
 end
 
 @testset "Get Measurement" begin
@@ -239,6 +250,11 @@ end
     @test TcpInstruments.verify_source("CURR") == false
     @test_throws ErrorException TcpInstruments.verify_source("RES")
 
+    @test TcpInstruments.verify_source_mode("FIX") == false
+    @test TcpInstruments.verify_source_mode("LIST") == false
+    @test TcpInstruments.verify_source_mode("SWE") == false
+    @test_throws ErrorException TcpInstruments.verify_source_mode("Throw")
+
     @test TcpInstruments.verify_measurement("VOLT") == false
     @test TcpInstruments.verify_measurement("CURR") == false
     @test TcpInstruments.verify_measurement("RES") == false
@@ -249,26 +265,33 @@ end
     @test TcpInstruments.verify_value_specifier("DEF") == false
     @test_throws ErrorException TcpInstruments.verify_value_specifier("Throw") == true
 
+    @test TcpInstruments.verify_start(5u"V") == nothing
+    @test TcpInstruments.verify_start(5u"A") == nothing
+    @test TcpInstruments.verify_start("MAX") == false
+    
+    @test TcpInstruments.verify_stop(5u"V") == nothing
+    @test TcpInstruments.verify_stop(5u"A") == nothing
+    @test TcpInstruments.verify_stop("MAX") == false
+    
+    @test TcpInstruments.verify_stop(5u"V") == nothing
+    @test TcpInstruments.verify_step(5u"A") == nothing
+    @test TcpInstruments.verify_step("MAX") == false
+
+    @test TcpInstruments.verify_start(5u"V") == nothing
+    @test TcpInstruments.verify_start(5u"A") == nothing
+    @test TcpInstruments.verify_start("MAX") == false
+    
+    @test TcpInstruments.verify_voltage(5u"V") == nothing
     @test TcpInstruments.verify_voltage("DEF") == false
-    @test TcpInstruments.verify_voltage(5u"V") == false
     @test_throws ErrorException  TcpInstruments.verify_voltage(5u"A")
 
+    @test TcpInstruments.verify_current(5u"A") == nothing
     @test TcpInstruments.verify_current("DEF") == false
-    @test TcpInstruments.verify_current(5u"A") == false
     @test_throws ErrorException  TcpInstruments.verify_current(5u"V")
 
-    @test TcpInstruments.verify_range(100) == nothing
-    @test TcpInstruments.verify_range("MIN") == false
-    @test TcpInstruments.verify_range("MAX") == false
-    @test TcpInstruments.verify_range("DEF") == false
-    @test TcpInstruments.verify_range("UP") == false
-    @test TcpInstruments.verify_range("DOWN") == false
-    @test_throws ErrorException  TcpInstruments.verify_range("Throw")
-
-    @test TcpInstruments.verify_aperture(1u"s") == false
-    @test TcpInstruments.verify_aperture("MIN") == false
-    @test TcpInstruments.verify_aperture("MAX") == false
+    @test TcpInstruments.verify_aperture(1u"s") == nothing
     @test TcpInstruments.verify_aperture("DEF") == false
+    @test_throws ErrorException  TcpInstruments.verify_aperture(1)
 
     @test TcpInstruments.attach_unit!(1, "VOLT") isa Unitful.Voltage
     @test TcpInstruments.attach_unit!(1, "CURR") isa Unitful.Current
