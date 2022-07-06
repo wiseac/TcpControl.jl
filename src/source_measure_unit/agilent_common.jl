@@ -257,10 +257,28 @@ end
 _get_source_mode(obj, source, channel) = query(obj, "SOUR$channel:$source:MODE?")
 
 """
-    set_voltage_sweep_start(obj::Instr{<:AgilentSourceMeasureUnit}; start="DEF", channel::Integer=1) 
+    set_voltage_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit}; 
+    start="DEF", 
+    stop="DEF", 
+    step="DEF", 
+    channel::Integer=1)
 
-    This will set a channel's voltage source start value for sweep output.
+    This will set a channel's voltage source start, stop, step, and trigger point value for sweep output. 
+    points = span/step + 1 (where step is not 0)
+    span = stop - start
 """
+function set_voltage_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit}; 
+    start="DEF", 
+    stop="DEF", 
+    step="DEF", 
+    channel::Integer=1)
+
+    set_voltage_sweep_start(obj; start, channel)
+    set_voltage_sweep_stop(obj; stop, channel)
+    set_voltage_sweep_step(obj; step, channel)
+    set_voltage_trigger_points(obj; channel)
+end
+
 function set_voltage_sweep_start(obj::Instr{<:AgilentSourceMeasureUnit}; start="DEF", channel::Integer=1) 
     verify_start(start)
     _set_voltage_sweep_start(obj, start, channel)
@@ -269,24 +287,6 @@ end
 
 _set_voltage_sweep_start(obj, start, channel) = write(obj, "SOUR$channel:VOLT:START $(raw(start))")
 
-"""
-    set_current_sweep_start(obj::Instr{<:AgilentSourceMeasureUnit}; start="DEF", channel::Integer=1) 
-
-    This will set a channel's current source start value for sweep output.
-"""
-function set_current_sweep_start(obj::Instr{<:AgilentSourceMeasureUnit}; start="DEF", channel::Integer=1) 
-    verify_start(start)
-    _set_current_sweep_start(obj, start, channel)
-    return nothing
-end
-
-_set_current_sweep_start(obj, start, channel) = write(obj, "SOUR$channel:CURR:START $(raw(start))")
-
-"""
-    set_voltage_sweep_stop(obj::Instr{<:AgilentSourceMeasureUnit}; stop"DEF", channel::Integer=1) 
-
-    This will set a channel's voltage source stop value for sweep output.
-"""
 function set_voltage_sweep_stop(obj::Instr{<:AgilentSourceMeasureUnit}; stop="DEF", channel::Integer=1) 
     verify_stop(stop)
     _set_voltage_sweep_stop(obj, stop, channel)
@@ -295,26 +295,6 @@ end
 
 _set_voltage_sweep_stop(obj, stop, channel) = write(obj, "SOUR$channel:VOLT:STOP $(raw(stop))")
 
-"""
-    set_current_sweep_stop(obj::Instr{<:AgilentSourceMeasureUnit}; stop="DEF", channel::Integer=1) 
-
-    This will set a channel's current source stop value for sweep output.
-"""
-function set_current_sweep_stop(obj::Instr{<:AgilentSourceMeasureUnit}; stop="DEF", channel::Integer=1) 
-    verify_stop(stop)
-    _set_current_sweep_stop(obj, stop, channel)
-    return nothing
-end
-
-_set_current_sweep_stop(obj, stop, channel) = write(obj, "SOUR$channel:CURR:STOP $(raw(stop))")
-
-"""
-    set_voltage_sweep_step(obj::Instr{<:AgilentSourceMeasureUnit}; step="DEF", channel::Integer=1)
-
-    This will set a channel's voltage source step value for sweep output. 
-    Changing step value will automatically change point value.
-    points = span/step + 1 (where step is not 0)
-"""
 function set_voltage_sweep_step(obj::Instr{<:AgilentSourceMeasureUnit}; step="DEF", channel::Integer=1) 
     verify_step(step)
     _set_voltage_sweep_step(obj, step, channel) 
@@ -323,13 +303,65 @@ end
 
 _set_voltage_sweep_step(obj, step, channel) = write(obj, "SOUR$channel:VOLT:STEP $(raw(step))")
 
-"""
-    set_current_sweep_step(obj::Instr{<:AgilentSourceMeasureUnit}; step="DEF", channel::Integer=1)
+function set_voltage_trigger_points(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
+    span = _get_voltage_span(obj, channel)
+    step = _get_voltage_step(obj, channel)
+    points =  _get_trigger_points(span, step)
+    _set_voltage_trigger_points(obj, points, channel)
+end
 
-    This will set a channel's voltage source step value for sweep output. 
-    Changing step value will automatically change point value.
-    points = span/step + 1 (where step is not 0)
+_get_voltage_span(obj, channel) = f_query(obj, ":SOUR$channel:VOLT:SPAN?")
+_get_voltage_step(obj, channel) = f_query(obj, ":SOUR$channel:VOLT:STEP?") 
+
+function _get_trigger_points(span, step)
+    if step == 0
+        return 1
+    else
+        return trunc(Int, span/step + 1)
+    end
+end
+
+_set_voltage_trigger_points(obj, points, channel) = write(obj, ":TRIG$channel:ALL:COUN $points")
+
 """
+    set_current_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit}; 
+    start="DEF", 
+    stop="DEF", 
+    step="DEF", 
+    channel::Integer=1)
+
+    This will set a channel's current source start, stop, step, and trigger point value for sweep output. 
+    points = span/step + 1 (where step is not 0)
+    span = stop - start
+"""
+function set_current_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit}; 
+    start="DEF", 
+    stop="DEF", 
+    step="DEF", 
+    channel::Integer=1)
+
+    set_current_sweep_start(obj; start, channel)
+    set_current_sweep_stop(obj; stop, channel)
+    set_current_sweep_step(obj; step, channel)
+    set_current_trigger_points(obj; channel)
+end
+
+function set_current_sweep_start(obj::Instr{<:AgilentSourceMeasureUnit}; start="DEF", channel::Integer=1) 
+    verify_start(start)
+    _set_current_sweep_start(obj, start, channel)
+    return nothing
+end
+
+_set_current_sweep_start(obj, start, channel) = write(obj, "SOUR$channel:CURR:START $(raw(start))")
+
+function set_current_sweep_stop(obj::Instr{<:AgilentSourceMeasureUnit}; stop="DEF", channel::Integer=1) 
+    verify_stop(stop)
+    _set_current_sweep_stop(obj, stop, channel)
+    return nothing
+end
+
+_set_current_sweep_stop(obj, stop, channel) = write(obj, "SOUR$channel:CURR:STOP $(raw(stop))")
+
 function set_current_sweep_step(obj::Instr{<:AgilentSourceMeasureUnit}; step="DEF", channel::Integer=1) 
     verify_step(step)
     _set_current_sweep_step(obj, step, channel)
@@ -337,6 +369,17 @@ function set_current_sweep_step(obj::Instr{<:AgilentSourceMeasureUnit}; step="DE
 end
 
 _set_current_sweep_step(obj, step, channel) = write(obj, "SOUR$channel:CURR:STEP $(raw(step))")
+
+function set_current_trigger_points(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
+    span = _get_current_span(obj, channel)
+    step = _get_current_step(obj, channel)
+    points =  _get_trigger_points(span, step)
+    _set_current_trigger_points(obj, points, channel)
+end
+
+_get_current_span(obj, channel) = f_query(obj, ":SOUR$channel:CURR:SPAN?")
+_get_current_step(obj, channel) = f_query(obj, ":SOUR$channel:CURR:STEP?") 
+_set_current_trigger_points(obj, points, channel) = write(obj, ":TRIG$channel:ALL:COUN $points")
 
 """
     set_measurement_range(obj::Instr{<:AgilentSourceMeasureUnit}, range; channel::Integer=1)
@@ -388,24 +431,69 @@ _set_measurement_duration(obj, aperture, channel) = write(obj, "SENS$channel:VOL
     start_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
 
     Initiates the specified device action for the specified channel. Trigger status is changed from idle to initiated.
+    Adjust voltage and current limit if necessary.
 """
-start_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1) = write(obj, ":INIT:ACQ (@$channel)")
+start_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1) = write(obj, ":INIT (@$channel)")
 
 """
     get_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
 
     Get measurement stored by start_measurement(). 
-    Returns voltage, current, and resistance if measurement is enabled and valid.
-    Invalid measurements which are indicated as "not a number" will be removed.
+    Returns voltage, current, resistance, and time.
 """
 function get_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
-    specify_element_format_vcr(obj)
+    voltage = _get_voltage(obj, channel)
+    current = _get_current(obj, channel)
+    resistance = _get_resistance(obj, channel)
+    time = _get_time(obj, channel)
+    return SourceMeasureUnitData(voltage, current, resistance, time)
+end
+
+function _get_voltage(obj, channel)
+    _format_voltage(obj)
     arr = fetch_array(obj, channel)
-    arr = parse_measurement_vcr!(arr)
+    arr = split(arr,",")
+    arr = parse.(Float64, arr)
+    arr = arr * V
     return arr
 end
 
-fetch_array(obj, channel) = query(obj, ":FETCH:ARR? (@$channel)")
+_format_voltage(obj) = write(obj, "FORM:ELEM:SENS VOLT")
+
+function _get_current(obj, channel)
+    _format_current(obj)
+    arr = fetch_array(obj, channel)
+    arr = split(arr,",")
+    arr = parse.(Float64, arr)
+    arr = arr * A
+    return arr
+end
+
+_format_current(obj) = write(obj, "FORM:ELEM:SENS CURR")
+
+function _get_resistance(obj, channel)
+    _format_resistance(obj)
+    arr = fetch_array(obj, channel)
+    arr = split(arr,",")
+    arr = parse.(Float64, arr)
+    arr = arr * R
+    return arr
+end
+
+_format_resistance(obj) = write(obj, "FORM:ELEM:SENS RES")
+
+function _get_time(obj, channel)
+    _format_time(obj)
+    arr = fetch_array(obj, channel)
+    arr = split(arr,",")
+    arr = parse.(Float64, arr)
+    arr = arr * u"s"
+    return arr
+end
+
+_format_time(obj) = write(obj, "FORM:ELEM:SENS TIME")
+
+fetch_array(obj, channel) = query(obj, ":FETCH:ARR? (@$channel)"; timeout = 5)
 
 verify_source(source) = !(source in ["VOLT", "CURR"]) && error("Source \"$source\" is not valid!\nIt's value must be \"VOLT\" or \"CURR\".")
 verify_source_mode(mode) = !(mode in ["FIX", "LIST", "SWE"]) && error("Source mode \"$mode\" is not valid!\nIt's value must be \"FIX\", \"LIST\", or \"SWE\".")

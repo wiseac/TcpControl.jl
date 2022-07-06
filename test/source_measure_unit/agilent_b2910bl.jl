@@ -26,16 +26,11 @@ Spec:
 
     set_voltage_output()
     set_voltage_limit()
+    set_voltage_sweep_parameters()
 
     set_current_output()
     set_current_limit()
-
-    set_source_mode()
-    set_voltage_sweep_start()
-    set_voltage_sweep_stop()
-    set_current_sweep_start()
-    set_current_sweep_stop()
-    set_current_sweep_step()
+    set_current_sweep_parameters()
 
     start_measurement()
     get_measurement()
@@ -186,23 +181,25 @@ end
     set_source_mode(smu; source="CURR", mode="SWE")
     @test get_source_mode(smu; source="CURR") == "SWE"
 
-    set_voltage_sweep_start(smu; start=-1u"V")
+    set_voltage_sweep_parameters(smu; start=-1u"V", stop=3u"V", step=0.1u"V")
     @test f_query(smu, "SOUR:VOLT:START?") == -1.0
+    @test f_query(smu, "SOUR:VOLT:STOP?") == 3.0
+    @test f_query(smu, "SOUR:VOLT:STEP?") == 0.1
 
-    set_voltage_sweep_start(smu; start="MIN")
+    set_voltage_sweep_parameters(smu; start="MIN", stop="MAX", step=1*u"V")
     @test f_query(smu, "SOUR:VOLT:START?") != -1.0
+    @test f_query(smu, "SOUR:VOLT:STOP?") != 3.0
+    @test f_query(smu, "SOUR:VOLT:STEP?") != 0.1
 
-    set_voltage_sweep_stop(smu; stop=1u"V")
-    @test f_query(smu, "SOUR:VOLT:STOP?") == 1.0
+    set_current_sweep_parameters(smu; start=0u"A", stop=1u"A", step=0.1u"A")
+    @test f_query(smu, "SOUR:CURR:START?") == 0.0
+    @test f_query(smu, "SOUR:CURR:STOP?") == 1.0
+    @test f_query(smu, "SOUR:CURR:STEP?") == 0.1
 
-    set_voltage_sweep_stop(smu; stop="MAX")
-    @test f_query(smu, "SOUR:VOLT:STOP?") != 1.0
-
-    set_voltage_sweep_step(smu; step=0.5u"V")
-    @test f_query(smu, "SOUR:VOLT:STEP?") == 0.5
-
-    set_voltage_sweep_step(smu; step="MAX")
-    @test f_query(smu, "SOUR:VOLT:STEP?") != 0.5
+    set_current_sweep_parameters(smu; start="MIN", stop="MAX", step=0.1*u"A")
+    @test f_query(smu, "SOUR:CURR:START?") != 0.0
+    @test f_query(smu, "SOUR:CURR:STOP?") != 1.0
+    @test f_query(smu, "SOUR:CURR:STEP?") == 0.1
 end
 
 @testset "Measurement Range" begin
@@ -226,22 +223,48 @@ end
 
 @testset "Measurement Duration" begin
 
-    set_measurement_duration(smu; aperture=0.5u"s")
-    @test f_query(smu, "SENS:VOLT:APER?") == 0.5
+    set_measurement_duration(smu; aperture=0.1u"s")
+    @test f_query(smu, "SENS:VOLT:APER?") == 0.1
 
-    set_measurement_duration(smu; aperture="MAX")
-    @test f_query(smu, "SENS:VOLT:APER?") != 0.5
+    set_measurement_duration(smu; aperture="DEF")
+    @test f_query(smu, "SENS:VOLT:APER?") != 0.1
 
     @test_throws ErrorException set_measurement_duration(smu; aperture = 0.5)
 end
 
-@testset "Get Measurement" begin
-    TcpInstruments.instrument_reset(smu)
+@testset "Start/Get Measurement" begin
 
-    start_measurement(smu)
-    data = get_measurement(smu)
-    @test data isa Tuple
-    @info data
+    @testset "Voltage Sweep" begin
+
+        set_source(smu; source="VOLT")
+        set_source_mode(smu; source="VOLT", mode="SWE")
+        set_current_limit(smu, 1u"A" )
+        set_voltage_sweep_parameters(smu; start=-2u"V", stop=3u"V", step=0.1u"V")
+
+        start_measurement(smu)
+        data = get_measurement(smu)
+    
+        @test !isempty(data.voltage)
+        @test !isempty(data.current)
+        @test !isempty(data.resistance)
+        @test !isempty(data.time)
+    end
+    
+    @testset "Current Sweep" begin
+
+        set_source(smu; source="CURR")
+        set_source_mode(smu; source="CURR", mode="SWE")
+        set_voltage_limit(smu, 10u"V" )
+        set_current_sweep_parameters(smu; start=0u"A", stop=500u"mA", step=0.01u"A")
+
+        start_measurement(smu)
+        data = get_measurement(smu)
+
+        @test !isempty(data.voltage)
+        @test !isempty(data.current)
+        @test !isempty(data.resistance)
+        @test !isempty(data.time)
+    end
 end
 
 @testset "Helper Functions" begin

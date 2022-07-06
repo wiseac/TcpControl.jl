@@ -138,10 +138,8 @@ export set_source_mode, get_source_mode
 export set_measurement_mode, spot_measurement
 export enable_autorange, disable_autorange
 export set_measurement_range, set_measurement_duration
-export set_voltage_output, set_voltage_limit
-export set_voltage_sweep_start, set_voltage_sweep_stop, set_voltage_sweep_step
-export set_current_mode, set_current_output, set_current_limit
-export set_current_sweep_start, set_current_sweep_stop, set_current_sweep_step
+export set_voltage_output, set_voltage_limit, set_voltage_sweep_parameters
+export set_current_output, set_current_limit, set_current_sweep_parameters
 export get_measurement, start_measurement
 
 # Devices
