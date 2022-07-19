@@ -32,3 +32,6 @@ Agilent4294A:
     address: "10.1.30.39:5025"
 Agilent4395A:
     address: "10.1.30.38:1234"
+
+# Keysight Source Measure Unit
+AgilentB2910BL: "10.1.30.0"
