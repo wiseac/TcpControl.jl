@@ -52,13 +52,19 @@ import InstrumentConfig: initialize, terminate
 using Unitful
 using Unitful: s, ms, μs, ns, ps
 using Unitful: Current, Voltage, Frequency, Time
+
+@derived_dimension Resistance dimension(u"Ω")
+export Resistance
+
 const R = u"Ω"
 const V = u"V"
 const A = u"A"
 const Hz = u"Hz"
+const SMU_NAN = 9.91e37
 
 export Instrument
-export Oscilloscope, Multimeter, PowerSupply, WaveformGenerator, ImpedanceAnalyzer
+export Oscilloscope, Multimeter, PowerSupply
+export WaveformGenerator, ImpedanceAnalyzer, SourceMeasureUnit
 
 export save, load
 
@@ -125,7 +131,16 @@ export get_voltage_offset, set_voltage_offset
 export get_burst_period, set_burst_period
 export get_mode, set_mode_burst, set_mode_cw
 
-
+# Source Measure Unit
+export enable_output, disable_output
+export set_source, get_source
+export set_source_mode, get_source_mode
+export set_measurement_mode, spot_measurement
+export enable_autorange, disable_autorange
+export set_measurement_range, set_measurement_duration
+export set_voltage_output, set_voltage_limit, set_voltage_sweep_parameters
+export set_current_output, set_current_limit, set_current_sweep_parameters
+export get_measurement, start_measurement
 
 # Devices
 ## Impedance Analyzer
@@ -138,6 +153,8 @@ export AgilentDSOX4024A, AgilentDSOX4034A
 export AgilentE36312A, SRSPS310, VersatilePower
 ## Waveform Generator
 export Keysight33612A
+## Source Measure Unit
+export AgilentB2910BL
 
 export scan_network
 
