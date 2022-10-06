@@ -94,7 +94,7 @@ struct ScopeInfo
 end
 
 function Base.show(io::IO, info::ScopeInfo)
-    println(io, "scope_info: ")
+    println(io, " ScopeInfo: ")
     if get(io, :compact, false)
         show_core_fields(io, info)
     else
@@ -130,17 +130,23 @@ struct ScopeData
 end
 
 function Base.show(io::IO, ::MIME"text/plain", data_array::AbstractArray{ScopeData})
-    for idx in 1:length(data_array)
+    for idx in eachindex(data_array)
         data = data_array[idx]
-        println(io, "channel ", data.info.channel)
-        println(io, "volt: ", size(data.volt), " ", unit(data.volt[1]))
-        println(io, "time: ", size(data.time), " ", unit(data.time[1]))
-        println(io)
+        println(io, "Channel #", data.info.channel)
+        show(IOContext(io, :compact=>true), data)
+        println(io, "-------------------------")
     end
 end
 
 function Base.show(io::IO, data::ScopeData)
+    println(io, "ScopeData:")
+    show_volt_and_time(io, data)
     show(IOContext(io, :compact=>true), data.info)
-    println(io, "volt: ", size(data.volt), " ", unit(data.volt[1]))
-    println(io, "time: ", size(data.time), " ", unit(data.time[1]))
+    return nothing
+end
+
+function show_volt_and_time(io::IO, data::ScopeData)
+    println(io, "          volt: ", size(data.volt), " ", unit(data.volt[1]))
+    println(io, "          time: ", size(data.time), " ", unit(data.time[1]))
+    return nothing
 end
