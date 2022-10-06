@@ -78,7 +78,7 @@ Initializes a connection to the instrument at the given (input) IP address.
 # Keywords
 - `GPIB_ID`: The GPIB interface ID of your device. This is optional and doesn't need to be set unless you are using a prologix controller to control it remotely
 """
-function initialize(model::Type{T}, address; GPIB_ID=-1) where T <: Instrument
+function initialize(model::Type{<:Instrument}, address; GPIB_ID=-1)
     instr_h = CreateTcpInstr(model, address)
     connect!(instr_h)
     remote_mode(instr_h)
@@ -88,7 +88,7 @@ function initialize(model::Type{T}, address; GPIB_ID=-1) where T <: Instrument
     return instr_h
 end
 
-function initialize(model::Type{T}) where T <: Instrument
+function initialize(model::Type{<:Instrument})
     data = nothing
     try
         data = get_config()[string(model)]
