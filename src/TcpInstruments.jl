@@ -37,7 +37,7 @@ handle = initialize({Instrument-Type})
 ```
 
 To see the different types of devices you can interface with
-use `help>Instrument`.
+use `help?> Instrument`.
 """
 module TcpInstruments
 
@@ -65,6 +65,8 @@ const SMU_NAN = 9.91e37
 export Instrument
 export Oscilloscope, Multimeter, PowerSupply
 export WaveformGenerator, ImpedanceAnalyzer, SourceMeasureUnit
+export AgilentScope, KeysightMultimeter, AgilentImpedAnalyzer, SRSPowerSupply
+export AgilentPowerSupply, VersatilePowerSupply, AgilentSourceMeasureUnit, KeysightWaveGen
 
 export save, load
 

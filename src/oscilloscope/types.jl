@@ -1,5 +1,9 @@
 """
-- [`AgilentScope`](@ref)
+Supported Instruments:
+≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+
+  - [`AgilentDSOX4024A`](@ref)
+  - [`AgilentDSOX4034A`](@ref)
 """
 abstract type Oscilloscope <: Instrument end
 
@@ -29,7 +33,47 @@ Supported functions
 - [`get_coupling`](@ref)
 """
 abstract type AgilentScope <: Oscilloscope end
+"""
+Supported functions
+- [`initialize`](@ref)
+- [`terminate`](@ref)
+
+
+- [`run`](@ref)
+- [`stop`](@ref)
+- [`get_data`](@ref)
+- [`get_waveform_info`](@ref)
+
+
+- [`get_impedance`](@ref)
+- [`set_impedance_1Mohm`](@ref)
+- [`set_impedance_50ohm`](@ref)
+- [`get_lpf_state`](@ref)
+- [`lpf_on`](@ref)
+- [`lpf_off`](@ref)
+- [`get_coupling`](@ref)
+"""
 struct AgilentDSOX4024A <: AgilentScope end
+"""
+Supported functions
+- [`initialize`](@ref)
+- [`terminate`](@ref)
+
+
+- [`run`](@ref)
+- [`stop`](@ref)
+- [`get_data`](@ref)
+- [`get_waveform_info`](@ref)
+
+
+- [`get_impedance`](@ref)
+- [`set_impedance_1Mohm`](@ref)
+- [`set_impedance_50ohm`](@ref)
+- [`get_lpf_state`](@ref)
+- [`lpf_on`](@ref)
+- [`lpf_off`](@ref)
+- [`get_coupling`](@ref)
+"""
 struct AgilentDSOX4034A <: AgilentScope end
 
 

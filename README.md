@@ -34,7 +34,7 @@ TcpInstruments can be installed using the Julia package manager. From the Julia 
 pkg> add TcpInstruments
 julia> using TcpInstruments
 julia> ?
-help> Instrument
+help?> Instrument
 ```
 
 </details>

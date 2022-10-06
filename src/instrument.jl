@@ -3,42 +3,20 @@ import InstrumentConfig: initialize, terminate
 """
 An instrument is a generic device with which you can take and read measurements
 
-All instruments can be initialized and terminated. For more
-information on how to connect to a supported instrument:
-```
-help> initialize
-```
-
-You can use the help feature on any supported instrument group.
-
-For more information on the actual instruments you can initialize use julia's help feature on one of the supported instrument groups.
-
-For example lets say you want to learn about oscilloscopes.
-```
-julia> ?
-help> Oscilloscope
-
-  Supported Instruments:
-  ≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
-
-    •  AgilentDSOX4034A
-```
-
-Pick one of the supported instruments for more information on
-how to use it and for all its available functions:
-```
-help> AgilentDSOX4034A
-```
-
-
 # Supported Instrument Groups
 - `Oscilloscope`
 - `Multimeter`
 - `PowerSupply`
 - `WaveformGenerator`
 - `ImpedanceAnalyzer`
-- `XYZStage`
+- `SourceMeasureUnit`
 
+All instruments can be initialized and terminated. For more
+information on how to connect to a supported instrument:
+```
+help?> initialize
+```
+Use the help feature for documentation of each of the instrument groups for more detail.
 
 """
 abstract type Instrument end

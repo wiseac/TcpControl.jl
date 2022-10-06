@@ -1,7 +1,11 @@
 """
-- [`AgilentPowerSupply`](@ref)
-- [`SRSPowerSupply`](@ref)
-- [`VersatilePowerSupply`](@ref)
+Supported Instruments:
+≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
+
+  - [`AgilentE36312A`](@ref)
+  - [`SRSPS310`](@ref)
+  - [`Versatile2005XRLXI`](@ref)
+  - [`Versatile10010XRLXI`](@ref)
 """
 abstract type PowerSupply <: Instrument end
 
@@ -26,6 +30,22 @@ Supported functions
 - [`set_current_limit`](@ref)
 """
 abstract type AgilentPowerSupply <: PowerSupply end
+"""
+Supported functions
+- [`initialize`](@ref)
+- [`terminate`](@ref)
+
+
+- [`get_output_status`](@ref)
+- [`enable_output`](@ref)
+- [`disable_output`](@ref)
+- [`get_channel`](@ref)
+- [`set_channel`](@ref)
+- [`get_voltage`](@ref)
+- [`set_voltage`](@ref)
+- [`get_current_limit`](@ref)
+- [`set_current_limit`](@ref)
+"""
 struct AgilentE36312A <: AgilentPowerSupply end
 
 
@@ -49,6 +69,22 @@ Supported functions
 - [`set_current_limit`](@ref)
 """
 abstract type SRSPowerSupply <: PowerSupply end
+"""
+Supported functions
+- [`initialize`](@ref)
+- [`terminate`](@ref)
+
+
+- [`get_output_status`](@ref)
+- [`enable_output`](@ref)
+- [`disable_output`](@ref)
+- [`get_voltage`](@ref)
+- [`set_voltage`](@ref)
+- [`get_voltage_limit`](@ref)
+- [`set_voltage_limit`](@ref)
+- [`get_current_limit`](@ref)
+- [`set_current_limit`](@ref)
+"""
 struct SRSPS310 <: SRSPowerSupply end
 
 
@@ -85,5 +121,41 @@ you can use [`local_mode`](@ref) to turn the device back to
 local mode.
 """
 abstract type VersatilePowerSupply <: PowerSupply end
+"""
+Supported functions
+- [`initialize`](@ref)
+- [`terminate`](@ref)
+
+
+- [`get_output_status`](@ref)
+- [`enable_output`](@ref)
+- [`disable_output`](@ref)
+- [`get_voltage`](@ref)
+- [`set_voltage`](@ref)
+- [`get_current_limit`](@ref)
+- [`set_current_limit`](@ref)
+
+
+- [`remote_mode`](@ref) (automatically called by [`initialize`](@ref))
+- [`local_mode`](@ref) (automatically called by [`terminate`](@ref))
+"""
 struct Versatile2005XRLXI <: VersatilePowerSupply end
+"""
+Supported functions
+- [`initialize`](@ref)
+- [`terminate`](@ref)
+
+
+- [`get_output_status`](@ref)
+- [`enable_output`](@ref)
+- [`disable_output`](@ref)
+- [`get_voltage`](@ref)
+- [`set_voltage`](@ref)
+- [`get_current_limit`](@ref)
+- [`set_current_limit`](@ref)
+
+
+- [`remote_mode`](@ref) (automatically called by [`initialize`](@ref))
+- [`local_mode`](@ref) (automatically called by [`terminate`](@ref))
+"""
 struct Versatile10010XRLXI <: VersatilePowerSupply end
