@@ -91,19 +91,21 @@ Cool Tip: Since we specified an alias for the signal generator we can initialize
 ```julia
 sg = initialize(OleBigSG)
 ```
+
 (No dashes, spaces or other special characters in alias names, treat them like variables, because they are.)
 
 
 To send custom commands where no return response is expected use the `write()` function:
-    ```julia
-    julia> write(instr, "<SCPI command>")
-    ```
-    
-    If the device is sending a response to the command use `query()` instead:
-    ```julia
-    julia> response = query(instr, "<SCPI command>")
-    ```
-    The convenience functions `f_query()` and `i_query()` parse the response string to a `Float64` and `Int64`, respectively.
+```julia
+julia> write(instr, "<SCPI command>")
+```
+
+If the device is sending a response to the command use `query()` instead:
+```julia
+julia> response = query(instr, "<SCPI command>")
+```
+
+The convenience functions `f_query()` and `i_query()` parse the response string to a `Float64` and `Int64`, respectively.
 
 ## General Usage
 
