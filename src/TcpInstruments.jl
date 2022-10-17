@@ -150,7 +150,7 @@ export Agilent4294A, Agilent4395A
 ## Multimeter
 export KeysightDMM34465A
 ## Scope
-export AgilentDSOX4024A, AgilentDSOX4034A
+export AgilentDSOX4024A, AgilentDSOX4034A, AgilentDSOX1204G
 ## Power Supply
 export AgilentE36312A, SRSPS310, VersatilePower
 ## Waveform Generator

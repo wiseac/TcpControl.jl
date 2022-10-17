@@ -75,6 +75,7 @@ Supported functions
 - [`get_coupling`](@ref)
 """
 struct AgilentDSOX4034A <: AgilentScope end
+struct AgilentDSOX1204G <: AgilentScope end
 
 
 struct ScopeInfo
