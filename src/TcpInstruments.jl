@@ -97,7 +97,8 @@ export get_amplitude, set_amplitude
 export get_voltage_offset, set_voltage_offset
 export set_burst_mode_gated, set_burst_mode_triggered, get_burst_mode
 export get_mode, set_mode_burst, set_mode_cw
-
+export set_speed_mode
+export set_waveform_num_points, get_waveform_num_points
 
 # Prologix
 export set_prologix_chan, get_prologix_chan, scan_prologix

@@ -387,8 +387,18 @@ Set data transfer format to 16bit
 set_data_transfer_format_16bit(instr::Instr{<:AgilentScope}) = write(instr, "WAVEFORM:FORMAT WORD")
 
 get_waveform_num_points(instr::Instr{<:AgilentScope}) = query(instr, "WAVEFORM:POINTS?")
+
+
+"""
+    set_waveform_num_points(instr::Instr{<:AgilentScope}, num_points::Integer)
+Sets the number of sample points in the voltage trace returned by the scope when using
+`get_data`(@ref).
+
+# Arguments
+- `num_points::Integer`: number of sample points.
+"""
 set_waveform_num_points(instr::Instr{<:AgilentScope}, num_points::Integer) = write(instr, "WAVEFORM:POINTS $num_points")
-set_waveform_num_points(instr::Instr{<:AgilentScope}, mode::String) = write(instr, "WAVEFORM:POINTS $mode")
+set_waveform_num_points(instr::Instr{<:AgilentScope}, mode::String) = write(instr, "WAVEFORM:POINTS $mode") #<- I suspect this function is here by an error. TODO: test if this function works
 
 get_waveform_points_mode(instr::Instr{<:AgilentScope}) = query(instr, "WAVEFORM:POINTS:MODE?")
 
@@ -412,21 +422,41 @@ function set_waveform_points_mode(instr::Instr{<:AgilentScope}, mode::Symbol)
     return nothing
 end
 
+"""
+set_speed_mode(instr::Instr{<:AgilentScope}, speed::Integer)
 
+Adjust the tradeoff between speed and resolution.
+This is a wrapper function around the three functions:
+- `set_data_transfer_format_16bit`(@ref)
+- `set_data_transfer_format_8bit`(@ref)
+- `set_waveform_points_mode`(@ref)
+
+
+Inputs:
+`instr`: handle to the connected Agilenst oscilloscope
+`speed`: integer of value 1,3,5, or 6, where 1 is slowest and 6 is fastest.
+- 1: 16bit, RAW mode
+- 3: 16bit, NORMAL mode
+- 5: 8bit, RAW mode
+- 6: 8bit, NORMAL mode
+
+Speed 6 corresponds to the Agilent scope normal setting when booting.
+"""
 function set_speed_mode(instr::Instr{<:AgilentScope}, speed::Integer)
     if speed == 1
         set_data_transfer_format_16bit(instr)
-        set_waveform_points_mode(instr, :NORMAL)
+        set_waveform_points_mode(instr, :RAW)
     elseif speed == 3
         set_data_transfer_format_16bit(instr)
-        set_waveform_points_mode(instr, :RAW)
+        set_waveform_points_mode(instr, :NORMAL)
     elseif speed == 5
         set_data_transfer_format_8bit(instr)
-        set_waveform_points_mode(instr, :NORMAL)
+        set_waveform_points_mode(instr, :RAW)
     elseif speed == 6
         set_data_transfer_format_8bit(instr)
-        set_waveform_points_mode(instr, :RAW)
+        set_waveform_points_mode(instr, :NORMAL)
     end
+    return nothing
 end
 
 """
