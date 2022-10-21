@@ -416,16 +416,16 @@ end
 function set_speed_mode(instr::Instr{<:AgilentScope}, speed::Integer)
     if speed == 1
         set_data_transfer_format_16bit(instr)
-        set_waveform_points_mode(instr, 1)
+        set_waveform_points_mode(instr, :NORMAL)
     elseif speed == 3
         set_data_transfer_format_16bit(instr)
-        set_waveform_points_mode(instr, 0)
+        set_waveform_points_mode(instr, :RAW)
     elseif speed == 5
         set_data_transfer_format_8bit(instr)
-        set_waveform_points_mode(instr, 1)
+        set_waveform_points_mode(instr, :NORMAL)
     elseif speed == 6
         set_data_transfer_format_8bit(instr)
-        set_waveform_points_mode(instr, 0)
+        set_waveform_points_mode(instr, :RAW)
     end
 end
 
