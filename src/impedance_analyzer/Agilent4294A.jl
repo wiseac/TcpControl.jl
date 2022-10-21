@@ -3,6 +3,9 @@
 
 Returns bandwidth level (1-5)
 
+# Arguments
+- `i::Instr{Agilent4294A}`: ImpedanceAnalyzer
+
 # Returns
 - `Int`: Between 1 and 5
 
@@ -16,11 +19,12 @@ measurement).
 get_bandwidth(i::Instr{Agilent4294A}) = i_query(i, "BWFACT?")
 
 """
-    set_bandwith(instr, n)
+    set_bandwidth(i::Instr{Agilent4294A}, n)
 
 Sets bandwidth level (1-5)
 
 # Arguments
+- `i::Instr{Agilent4294A}`: ImpedanceAnalyzer
 - `n::Int`: Desired bandwidth level (between 1 and 5)
 """
 function set_bandwidth(i::Instr{Agilent4294A}, n)
@@ -32,6 +36,12 @@ end
     get_volt_ac(instr)
 
 Returns oscillator (ac) voltage
+
+# Arguments
+- `i::Instr{Agilent4294A}`: ImpedanceAnalyzer
+
+# Returns
+- `Float64`: oscillator (ac) voltage
 """
 function get_volt_ac(ia::Instr{Agilent4294A})
     write(ia, "POWE?")
@@ -42,16 +52,26 @@ end
 """
     set_volt_ac(instr, voltage)
 
+Sets the ImpedanceAnalyzer voltage 
+
 # Arguments
+- `i::Instr{Agilent4294A}`: ImpedanceAnalyzer
 - `voltage`: Desired voltage, range for voltage setting: 5E-3 to 1
 """
 set_volt_ac(i::Instr{Agilent4294A}, n::Voltage) = write(i, "POWE $(raw(n))"*"V")
 
 
 """
-    get_impedance(Instr{Agilent4294A})
-Gets the impedance from the impedance analyser. This function doesn't change any settings on
+    get_impedance(ia::Instr{Agilent4294A})
+
+Gets the impedance from the impedance analyzer. This function doesn't change any settings on
 the device, it only grabs data using the current settings.
+
+# Arguments
+- `ia::Instr{Agilent4294A}`: ImpedanceAnalyzer
+
+# Returns
+- `ImpedanceAnalyzerData`: impedance from impedance analyzer
 """
 function get_impedance(ia::Instr{Agilent4294A})
     info = get_impedance_analyzer_info(ia)

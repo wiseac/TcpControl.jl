@@ -4,15 +4,20 @@ include("./Agilent4395A.jl")
 
 """
     get_impedance_analyzer_info(ia::Instr{<:AgilentImpedAnalyzer})
+
 Get current acquisition parameters from the impedance analyzer
 
-dc_voltage [V]
-ac_voltage [V]
-num_averages
-bandwidth_level [1, 2, 3, 4, 5]
-point_delay_time [s]
-sweep_delay_time [s]
-sweep_direction ["UP", "DOWN"]
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer}`: ImpedanceAnalyzer
+
+# Returns
+- `ImpedanceAnalyzerInfo`: dc_voltage [V]
+    ac_voltage [V]
+    num_averages
+    bandwidth_level [1, 2, 3, 4, 5]
+    point_delay_time [s]
+    sweep_delay_time [s]
+    sweep_direction ["UP", "DOWN"]
 """
 function get_impedance_analyzer_info(ia::Instr{<:AgilentImpedAnalyzer})
     dc_voltage = get_volt_dc(ia)
@@ -28,7 +33,14 @@ end
 
 """
     get_num_averages(ia::Instr{<:AgilentImpedAnalyzer})
+
 Get the number of sweep averages being used
+
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer}`: ImpedanceAnalyzer
+
+# Returns
+- `Float64`: number of sweet averages being iused
 """
 function get_num_averages(ia::Instr{<:AgilentImpedAnalyzer})
     if is_average_mode_on(ia)
@@ -43,8 +55,14 @@ end
 
 """
     is_average_mode_on(ia::Instr{<:AgilentImpedAnalyzer})
+
 Get status for whether average mode is on
-Output is [true, false]
+
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer}`: ImpedanceAnalyzer
+
+# Returns
+- `Bool`: [true, false]
 """
 function is_average_mode_on(ia::Instr{<:AgilentImpedAnalyzer})
     write(ia, "AVER?")
@@ -66,8 +84,14 @@ end
 
 """
     get_sweep_delay_time(ia::Instr{<:AgilentImpedAnalyzer})
+
 Get time delay value used between sweep acquisitions
-Output is in [s]
+
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer}`: ImpedanceAnalyzer
+
+# Returns
+- `Float64`: Get time delay value used between sweep acquisitions in [s]
 """
 function get_sweep_delay_time(ia::Instr{<:AgilentImpedAnalyzer})
     write(ia, "SDELT?")
@@ -78,11 +102,16 @@ end
 
 """
     get_sweep_direction(ia::Instr{<:AgilentImpedAnalyzer})
+
 Get acquisition sweep direction
 Output is ["UP", "DOWN"]
 
-"UP": sweeps along increasing values (left to right on screen)
-"DOWN": sweeps along decreasing values (right to left on screen)
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer}`: ImpedanceAnalyzer
+
+# Returns
+- `UP` sweeps along increasing values (left to right on screen), 
+    `DOWN` sweeps along decreasing values (right to left on screen)
 """
 function get_sweep_direction(ia::Instr{<:AgilentImpedAnalyzer})
     write(ia, "SWED?")
@@ -93,8 +122,15 @@ end
 
 """
     get_frequency(ia::Instr{<:AgilentImpedAnalyzer})
+
 Get an array of frequency values with the same number of points as the data trace
 Output is in [MHz]
+
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer}`: ImpedanceAnalyzer
+
+# Returns
+- `Array`: frequency values with the same number of points as the data trace
 """
 function get_frequency(ia::Instr{<:AgilentImpedAnalyzer})
     start_frequency = get_frequency_lower_bound(ia)
@@ -108,8 +144,13 @@ end
 """
     get_frequency_limits(ia::Instr{<:AgilentImpedAnalyzer})
 
+Gets frequency limits 
+
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer}`: ImpedanceAnalyzer
+
 # Returns
-`Tuple{Frequency, Frequency}`: (lower_limit, upper_limit)
+- `Tuple{Frequency, Frequency}`: (lower_limit, upper_limit)
 """
 function get_frequency_limits(ia::Instr{<:AgilentImpedAnalyzer})
     lower_bound = get_frequency_lower_bound(ia)
@@ -133,6 +174,12 @@ end
 """
     set_frequency_limits(ia::Instr{<:AgilentImpedAnalyzer}, lower_limit, upper_limit)
 
+Sets lower and upper frequency limits
+
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer}`: ImpedanceAnalyzer
+- `lower_bound::Frequency`: lower bound
+- `upper_bound::Frequency`: upper bound
 """
 function set_frequency_limits(ia::Instr{<:AgilentImpedAnalyzer}, lower_bound::Frequency, upper_bound::Frequency)
     if lower_bound > upper_bound
@@ -157,6 +204,9 @@ end
 """
     set_num_data_points(ia::Instr{<:AgilentImpedAnalyzer}, num_points)
 
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer`: ImpedanceAnalyzer
+- `num_data_points`: number of data points
 """
 function set_num_data_points(ia::Instr{<:AgilentImpedAnalyzer}, num_data_points)
     write(ia, "POIN $num_data_points")
@@ -167,6 +217,13 @@ end
 """
     get_num_data_points(ia::Instr{<:AgilentImpedAnalyzer})
 
+Gets the set number of data points
+
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer`: ImpedanceAnalyzer
+
+# Returns
+- `Int`: number of data points
 """
 function get_num_data_points(ia::Instr{<:AgilentImpedAnalyzer})
     write(ia, "POIN?")
@@ -178,6 +235,13 @@ end
 """
     get_volt_dc(ia::Instr{<:AgilentImpedAnalyzer})
 
+Gets DC voltage
+
+# Arguments
+- `ia::Instr{<:AgilentImpedAnalyzer`: ImpedanceAnalyzer
+
+# Returns
+- `Float64`: Voltage 
 """
 function get_volt_dc(ia::Instr{<:AgilentImpedAnalyzer})
     write(ia, "DCV?")
@@ -187,7 +251,12 @@ end
 
 
 """
-    set_volt_dc(ia::Instr{<:AgilentImpedAnalyzer}, volts)
+    set_volt_dc(obj::Instr{<:AgilentImpedAnalyzer}, num::Voltage)
 
+Sets DC voltage
+
+# Arguments
+- `obj::Instr{<:AgilentImpedAnalyzer`: ImpedanceAnalyzer
+- `num::Voltage`: voltage
 """
 set_volt_dc(obj::Instr{<:AgilentImpedAnalyzer}, num::Voltage) = write(obj, "DCV $(raw(num))")

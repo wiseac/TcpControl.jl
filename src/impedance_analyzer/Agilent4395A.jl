@@ -13,6 +13,9 @@ set_bandwith(i::Instr{Agilent4395A}, n) = write(i, "BW $n")
 
 
 """
+
+    get_impedance(obj::Instr{Agilent4395A}) 
+
 P. 3-10
 
 Error corrected data
@@ -21,6 +24,9 @@ Formatted data
 
 This is the array of data being displayed. It reflects all post-processing functions such as
 electrical delay, and the units of the array read out depends on the current display format.
+
+# Arguments
+- `obj::Instr{Agilent4395A}`: ImpedanceAnalyzer
 """
 function get_impedance(obj::Instr{Agilent4395A}) 
     write(obj, "MEAS IMAG")

@@ -80,6 +80,5 @@ Supported functions
 
 - [`start_measurement`](@ref)
 - [`get_measurement`](@ref)
-
 """
 struct AgilentB2910BL <: AgilentSourceMeasureUnit end

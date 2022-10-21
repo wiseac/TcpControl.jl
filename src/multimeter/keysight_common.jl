@@ -1,7 +1,13 @@
 """
-    get_tc_temperature(multimeter)
+    get_tc_temperature(obj::Instr{<:KeysightMultimeter})
 
 Perform take a measurement with the probe mode set to thermocouple
+
+# Arguments
+- `obj::Instr{<:KeysightMultimeter}}`: Multimeter
+
+# Returns 
+- `Float64`: tc temperature
 """
 function get_tc_temperature(obj::Instr{<:KeysightMultimeter})
     units = get_temp_unit(obj)
@@ -10,6 +16,11 @@ end
 
 """
     set_tc_type(multimeter; type="K")
+
+Sets TC Type
+
+# Arguments
+- `obj::Instr{<:KeysightMultimeter}}`: Multimeter
 
 # Keywords
 - `type`: Can be E, J, K, N, R, T (Defaults to K)
@@ -39,9 +50,11 @@ end
 
 Returns current
 
+# Arguments
+- `obj::Instr{<:KeysightMultimeter}}`: Multimeter
+
 # Keywords
 - `type`: "DC" | "AC" (Default DC)
-
 """
 function get_current(obj::Instr{<:KeysightMultimeter}; type="DC")
     !(type in ["AC","DC"]) && error("$type not valid!\nMust be AC or DC")
@@ -51,11 +64,14 @@ end
 """
     get_resistance(multimeter; wire=2)
     get_resistance(multimeter; wire=4)
+
 Returns resistance
+
+# Arguments
+- `obj::Instr{<:KeysightMultimeter}}`: Multimeter
 
 # Keywords
 - `wire`: 2 | 4 (Required)
-
 """
 function get_resistance(obj::Instr{<:KeysightMultimeter}; wire)
     if wire == 2
@@ -71,6 +87,9 @@ end
     set_temp_unit_celsius(multimeter)
 
 Sets the temperature unit to celcius
+
+# Arguments
+- `obj::Instr{<:KeysightMultimeter}}`: Multimeter
 """
 set_temp_unit_celsius(obj::Instr{<:KeysightMultimeter}) =
     write(obj, "UNIT:TEMPERATURE C")
@@ -79,6 +98,9 @@ set_temp_unit_celsius(obj::Instr{<:KeysightMultimeter}) =
     set_temp_unit_farenheit(multimeter)
 
 Sets the temperature unit to farenheit
+
+# Arguments
+- `obj::Instr{<:KeysightMultimeter}}`: Multimeter
 """
 set_temp_unit_farenheit(obj::Instr{<:KeysightMultimeter}) =
     write(obj, "UNIT:TEMPERATURE F")
@@ -87,6 +109,9 @@ set_temp_unit_farenheit(obj::Instr{<:KeysightMultimeter}) =
     set_temp_unit_kelvin(multimeter)
 
 Sets the temperature unit to kelvin
+
+# Arguments
+- `obj::Instr{<:KeysightMultimeter}}`: Multimeter
 """
 set_temp_unit_kelvin(obj::Instr{<:KeysightMultimeter}) =
     write(obj, "UNIT:TEMPERATURE K")
@@ -94,7 +119,13 @@ set_temp_unit_kelvin(obj::Instr{<:KeysightMultimeter}) =
 """
     get_temp_unit(multimeter)
 
-Returns C, F or K depending on the set temperature unit
+Returns set temperature unit
+
+# Arguments
+- `obj::Instr{<:KeysightMultimeter}}`: Multimeter
+
+# Returns
+- `u`: C, F or K
 """
 function get_temp_unit(obj::Instr{<:KeysightMultimeter})
    units = query(obj, "UNIT:TEMPERATURE?")

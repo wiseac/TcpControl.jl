@@ -77,7 +77,6 @@ Supported functions
 struct AgilentDSOX4034A <: AgilentScope end
 struct AgilentDSOX1204G <: AgilentScope end
 
-
 struct ScopeInfo
     format::String
     type::String

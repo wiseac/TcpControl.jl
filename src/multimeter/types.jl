@@ -27,6 +27,7 @@ Supported functions
 - [`set_temp_unit_kelvin`](@ref)
 """
 abstract type KeysightMultimeter <: Multimeter end
+
 """
 Supported functions
 - [`initialize`](@ref)

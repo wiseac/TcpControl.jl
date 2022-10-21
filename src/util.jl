@@ -23,6 +23,13 @@ Save data to a file
 
 By default saves to julia format (.jld2) but can also export
 data to matlab by using the format=:matlab keyword argument
+
+# Arguments
+- `data`: data to be saved to file
+
+# Keywords
+- `filename = ""`: default file name
+- `format = :julia`: default julia format
 """
 function save(data; filename = "", format = :julia)
     if isempty(filename)
@@ -97,9 +104,16 @@ end
 
 
 """
-    data = load("file.jld2")
+    data = load("function load(filename)
+    ")
 
 Loads saved data from a file
+
+# Arguments
+- `filename`: name of file
+
+# Returns
+- `Dict`: data from file
 """
 function load(filename)
     ext = split(filename, '.')[end]
@@ -123,6 +137,13 @@ By default, report all found devices between addresses `10.1.30.1` to `10.1.30.2
 Searches for devices connected on port:
 - 5025 (scpi)
 - 1234 (prologix)
+
+# Keywords
+- `network="10.1.30."`: IP address 
+- `host_range=1:255`: range for IP address
+
+# Returns
+- `Array`: IP Addresses 
 """
 function scan_network(; network="10.1.30.", host_range=1:255)
     network = ensure_ending_dot(network)
@@ -174,7 +195,14 @@ end
 
 """
     scan_prologix(ip::AbstractString)
-    Scans all GPIB addresses on a prologix device having the ip-address `ip`.
+
+Scans all GPIB addresses on a prologix device having the ip-address `ip`.
+
+# Arguments
+- `ip::AbstractString`: IP address
+
+# Returns 
+- `Dict`: devices
 """
 function scan_prologix(ip::AbstractString)
     devices = Dict()

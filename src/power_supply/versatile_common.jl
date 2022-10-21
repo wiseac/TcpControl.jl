@@ -3,11 +3,8 @@
 
 This will enable an output on a device.
 
-Arguments:
-  - obj
-    - must be a Power Supply Instrument
-Supported Instruments:
-   - Power supply
+# Arguments
+- `obj::Instr{<:VersatilePowerSupply}`: VersatilePowerSupply
 """
 enable_output(obj::Instr{<:VersatilePowerSupply}) = write(obj, "OUTPUT ON")
 
@@ -16,11 +13,8 @@ enable_output(obj::Instr{<:VersatilePowerSupply}) = write(obj, "OUTPUT ON")
 
 This will disable an output on a device.
 
-Arguments:
-  - obj
-    - must be a Power Supply Instrument
-Supported Instruments:
-   - Power supply
+# Arguments
+- `obj::Instr{<:VersatilePowerSupply}`: Power Supply Instrument
 """
 disable_output(obj::Instr{<:VersatilePowerSupply}) = write(obj, "OUTPUT OFF")
 
@@ -30,14 +24,11 @@ disable_output(obj::Instr{<:VersatilePowerSupply}) = write(obj, "OUTPUT OFF")
 
 This will return the state of an output on a device.
 
-Arguments:
-  - obj
-    - must be a Power Supply Instrument
-Supported Instruments:
-   - Power supply
+# Arguments
+- `obj::Instr{<:VersatilePowerSupply}`: Power supply instrument
 
-Returns:
-  String: {"OFF"|"ON"}
+# Returns
+- `String`: {"OFF"|"ON"}
 """
 get_output_status(obj::Instr{<:VersatilePowerSupply}) = query(obj, "OUTPUT?")
 
@@ -50,7 +41,7 @@ This will change the voltage output of a device.
 Supported Instruments:
    - Power supply
 
-Returns:
+# Returns
   Nothing
 """
 set_voltage(obj::Instr{<:VersatilePowerSupply}, num::Voltage) = write(obj, "VOLTAGE $(raw(num))")
@@ -63,7 +54,7 @@ This will return the voltage of a device
 Supported Instruments:
    - Power supply
 
-Returns:
+# Returns
   Voltage
 """
 get_voltage(obj::Instr{<:VersatilePowerSupply}) = f_query(obj, "VOLTAGE?") * V
@@ -73,11 +64,9 @@ get_voltage(obj::Instr{<:VersatilePowerSupply}) = f_query(obj, "VOLTAGE?") * V
 
 This will change the current limit of a device
 
-Supported Instruments:
-   - Power supply
-
-Returns:
-  Nothing
+# Arguments
+- `obj::Instr{<:VersatilePowerSupply}: Power supply
+- `num::Current`: current limit
 """
 set_current_limit(obj::Instr{<:VersatilePowerSupply}, num::Current) = write(obj, "CURRENT $(raw(num))")
 
@@ -90,7 +79,7 @@ This will return the current limit of a device.
 Supported Instruments:
    - Power supply
 
-Returns:
+# Returns
   Current Limit
 """
 get_current_limit(obj::Instr{<:VersatilePowerSupply}) = query(obj, "CURRENT?")
