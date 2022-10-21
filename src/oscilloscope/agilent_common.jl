@@ -444,6 +444,23 @@ function get_acquisition_type(scope::Instr{<:AgilentScope})
     return query(scope, "ACQUIRE:TYPE?")
 end
 
+
+"""
+    set_acquisition_type(scope::Instr{<:AgilentScope, type::Symbol})
+
+Sets acquisition type to either normal, average, high_res, or peak.
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+- `type::Symbol`: The acquisition type. Must be either `:normal`, `:average`, `:high_res`,
+                  or `peak`.
+"""
+set_acquisition_type(scope::Instr{<:AgilentScope}, type::Symbol) = set_acquisition_type(scope, Val(type))
+set_acquisition_type(scope::Instr{<:AgilentScope}, ::Val{:normal}) = write(scope, "ACQUIRE:TYPE NORM")
+set_acquisition_type(scope::Instr{<:AgilentScope}, ::Val{:average}) = write(scope, "ACQUIRE:TYPE AVER")
+set_acquisition_type(scope::Instr{<:AgilentScope}, ::Val{:high_res}) = write(scope, "ACQUIRE:TYPE HRES")
+set_acquisition_type(scope::Instr{<:AgilentScope}, ::Val{:peak}) = write(scope, "ACQUIRE:TYPE PEAK")
+
 """
     set_acquisition_type_normal(scope::Instr{<:AgilentScope})
 
@@ -452,7 +469,11 @@ Set acquisition type to normal
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-set_acquisition_type_normal(scope::Instr{<:AgilentScope}) = write(scope, "ACQUIRE:TYPE NORM")
+function set_acquisition_type_normal(scope::Instr{<:AgilentScope})
+    @warn "set_acquisition_type_normal() will be removed in release v0.13.0. Use set_acquisition_type(scope, :normal) instead"
+    set_acquisition_type(scope, :normal)
+    return nothing
+end
 
 """
     set_acquisition_type_average(scope::Instr{<:AgilentScope})
@@ -462,7 +483,11 @@ Set acquisition type to average
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-set_acquisition_type_average(scope::Instr{<:AgilentScope}) = write(scope, "ACQUIRE:TYPE AVER")
+function set_acquisition_type_average(scope::Instr{<:AgilentScope})
+    @warn "set_acquisition_type_average() will be removed in release v0.13.0. Use set_acquisition_type(scope, :average) instead"
+    set_acquisition_type(scope, :average)
+    return nothing
+end
 
 """
     set_acquisition_type_high_res(scope::Instr{<:AgilentScope})
@@ -472,7 +497,11 @@ Set acquisition type to high res
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-set_acquisition_type_high_res(scope::Instr{<:AgilentScope}) = write(scope, "ACQUIRE:TYPE HRES")
+function set_acquisition_type_high_res(scope::Instr{<:AgilentScope})
+    @warn "set_acquisition_type_high_res() will be removed in release v0.13.0. Use set_acquisition_type(scope, :high_res) instead"
+    set_acquisition_type(scope, :high_res)
+    return nothing
+end
 
 """
     set_acquisition_type_peak(scope::Instr{<:AgilentScope})
@@ -482,4 +511,8 @@ Set acquisition type to type peak
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-set_acquisition_type_peak(scope::Instr{<:AgilentScope}) = write(scope, "ACQUIRE:TYPE PEAK")
+function set_acquisition_type_peak(scope::Instr{<:AgilentScope})
+    @warn "set_acquisition_type_peak() will be removed in release v0.13.0. Use set_acquisition_type(scope, :peak) instead"
+    set_acquisition_type(scope, :peak)
+    return nothing
+end
