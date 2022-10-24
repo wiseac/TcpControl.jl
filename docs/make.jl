@@ -22,5 +22,7 @@ makedocs(
 # See "Hosting Documentation" and deploydocs() in the Documenter manual
 # for more information.
 deploydocs(
-    repo = "github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl.git"
+    repo = "github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl.git",
+    branch = "gh-pages",
+    target = "build",
 )
