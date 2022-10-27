@@ -1,6 +1,5 @@
 """
 Supported Instruments:
-≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
 
   - [`AgilentE36312A`](@ref)
   - [`SRSPS310`](@ref)
@@ -111,8 +110,8 @@ Supported functions
 - [`local_mode`](@ref) (automatically called by [`terminate`](@ref))
 
 This instrument has a remote mode and a local mode. Some commands do not
-work while the device is in local mode, therefore [`remote_mode`](@ref) 
-is called automatically upon initialization. By default, the device is 
+work while the device is in local mode, therefore [`remote_mode`](@ref)
+is called automatically upon initialization. By default, the device is
 always in remote mode.
 
 These functions should not be directly needed but if

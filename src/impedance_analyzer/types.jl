@@ -1,6 +1,5 @@
 """
 Supported Instruments:
-≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
 
   - [`Agilent4294A`](@ref)
   - [`Agilent4395A`](@ref)

@@ -1,6 +1,5 @@
 """
 Supported Instruments:
-≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
 
   - [`Keysight33612A`](@ref)
 """

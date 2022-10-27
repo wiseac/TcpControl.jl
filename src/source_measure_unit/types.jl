@@ -1,6 +1,5 @@
 """
 Supported Instruments:
-≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡≡
 
   - [`AgilentB2910BL`](@ref)
 """
