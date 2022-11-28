@@ -56,11 +56,11 @@ Initializes a connection to the instrument at the given (input) IP address.
 # Keywords
 - `GPIB_ID`: The GPIB interface ID of your device. This is optional and doesn't need to be set unless you are using a prologix controller to control it remotely
 
-# Returns 
+# Returns
 - `Instr`: An instrument of the specified model connected to the given IP address.
 
 # Throws
-- 'Instrument was not found in your .tcp_instruments.yml file' if the specified model is not listed 
+- 'Instrument was not found in your .tcp_instruments.yml file' if the specified model is not listed
 """
 function initialize(model::Type{<:Instrument}, address; GPIB_ID=-1)
     instr_h = CreateTcpInstr(model, address)
@@ -135,7 +135,7 @@ local_mode(obj) = nothing
 """
     set_prologix_chan(obj, chan)
 
-Set the prologix channel to given one 
+Set the prologix channel to given one
 
 # Arguments
 - `obj`: The device
@@ -151,7 +151,7 @@ Get the prologix channel
 # Arguments
 - `obj`: The device
 
-# Returns 
+# Returns
 - Prologix channel
 """
 get_prologix_chan(obj) = query(obj, "++addr")
@@ -163,7 +163,7 @@ get_prologix_chan(obj) = query(obj, "++addr")
 Asks an instrument to print model number and other device info.
 
 # Arguments
-- `obj`: Specified instrument to get device info 
+- `obj`: Specified instrument to get device info
 """
 info(obj) = query(obj, "*IDN?")
 
@@ -213,7 +213,7 @@ end
 Disconnects to the specified instrument and updates instrument connect status
 
 # Arguments
-- `instr::Instrument`: Specified instrument to be written to 
+- `instr::Instrument`: Specified instrument to be written to
 - `message::AbstractString`: Message to send to instrument
 
 # Throws
@@ -244,35 +244,18 @@ error will be thrown.
 - `message::AbstractString`: The message to be sent to the device before listening for a response
 
 # Keywords
-- `timeout`: How long to try and listen for a response before giving up and throwing an error. The default time is 2.8 seconds. 
+- `timeout`: How long to try and listen for a response before giving up and throwing an error. The default time is 2.8 seconds.
     _Note_: if timeout is set to 0 then this will turn off the timeout functionality and `query` may listen/block indefinitely for a response
 
 # Returns
 - `Data`: Output from device after message is sent
 
 # Throws
-- `Query timed out`: No output from device is receieved within timeout 
+- `Query timed out`: No output from device is receieved within timeout
 """
 function query(instr::Instrument, message::AbstractString; timeout=2.8)
     write(instr, message)
-    if timeout == 0
-        retval = read(instr)
-    else
-        proc = @spawn read(instr)
-        start_clock = time()
-        while (time() - start_clock) < timeout
-            if proc.state != :runnable
-                break
-            end
-            sleep(0.05)
-        end
-        if proc.state == :runnable
-            schedule(proc, ErrorException("Query timed out"), error=true)
-            error("Query timed out")
-        end
-        retval = fetch(proc)
-    end
-    return retval
+    return timeout == 0 ? read(instr) : read_with_timeout(instr, timeout)
 end
 
 """
@@ -290,7 +273,7 @@ error will be thrown.
 - `message`: The message to be sent to the device before listening for a response
 
 # Keywords
-- `timeout`: How long to try and listen for a response before giving up and throwing an error. The default time is 0.5 seconds. 
+- `timeout`: How long to try and listen for a response before giving up and throwing an error. The default time is 0.5 seconds.
     _Note_: if timeout is set to 0 then this will turn off the timeout functionality and `query` may listen/block indefinitely for a response
 
 # Returns
@@ -328,7 +311,7 @@ i_query(instr::Instrument, message; timeout=0.5) = parse(Int64, query(instr, mes
 Remove any unread data from the instrument buffer
 
 # Arguments
-- `instr::Instrument`: Instrument to have unread data cleared from buffer 
+- `instr::Instrument`: Instrument to have unread data cleared from buffer
 """
 function clear_buffer(instr::Instrument)
     while !isnothing(read_with_timeout(instr, 0.5))
@@ -336,13 +319,24 @@ function clear_buffer(instr::Instrument)
     return nothing
 end
 
-function read_with_timeout(instr::Instrument, timeout)
-    task = @spawn read(instr)
-    result = timedwait(() -> task.state != :runnable, timeout; pollint=0.05)
-    if result == :ok
-        return fetch(task)
-    elseif result == :timed_out
-        schedule(task, InterruptException(), error=true)
-        return nothing
+function read_with_timeout(instr::Instrument, timeout_sec=2.8)
+    ch = Channel(1)
+    task = @async begin
+        reader_task = current_task()
+        function timeout_cb(timer)
+            put!(ch, :timeout)
+            Base.throwto(reader_task, InterruptException())
+        end
+        timeout = Timer(timeout_cb, timeout_sec)
+        data = read(instr)
+        timeout_sec > 0 && close(timeout) # Cancel the timeout
+        put!(ch, data)
     end
+    wait(task)
+    bind(ch, task)
+    retval = take!(ch)
+    if retval === :timeout
+        return error("Query timed out")
+    end
+    return retval
 end
