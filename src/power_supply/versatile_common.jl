@@ -6,7 +6,7 @@ This will enable an output on a device.
 # Arguments
 - `obj::Instr{<:VersatilePowerSupply}`: VersatilePowerSupply
 """
-enable_output(obj::Instr{<:VersatilePowerSupply}) = write(obj, "OUTPUT ON")
+enable_output(obj::Instrument{<:VersatilePowerSupply}) = write(obj, "OUTPUT ON")
 
 """
     disable_output(obj::Instr{<:VersatilePowerSupply})
@@ -16,7 +16,7 @@ This will disable an output on a device.
 # Arguments
 - `obj::Instr{<:VersatilePowerSupply}`: Power Supply Instrument
 """
-disable_output(obj::Instr{<:VersatilePowerSupply}) = write(obj, "OUTPUT OFF")
+disable_output(obj::Instrument{<:VersatilePowerSupply}) = write(obj, "OUTPUT OFF")
 
 
 """
@@ -30,7 +30,7 @@ This will return the state of an output on a device.
 # Returns
 - `String`: {"OFF"|"ON"}
 """
-get_output_status(obj::Instr{<:VersatilePowerSupply}) = query(obj, "OUTPUT?")
+get_output_status(obj::Instrument{<:VersatilePowerSupply}) = query(obj, "OUTPUT?")
 
 """
     set_voltage(obj::Instr{<:VersatilePowerSupply}, num::Voltage)
@@ -44,7 +44,7 @@ Supported Instruments:
 # Returns
   Nothing
 """
-set_voltage(obj::Instr{<:VersatilePowerSupply}, num::Voltage) = write(obj, "VOLTAGE $(raw(num))")
+set_voltage(obj::Instrument{<:VersatilePowerSupply}, num::Voltage) = write(obj, "VOLTAGE $(raw(num))")
 
 """
     get_voltage(obj::Instr{<:VersatilePowerSupply})
@@ -57,7 +57,7 @@ Supported Instruments:
 # Returns
   Voltage
 """
-get_voltage(obj::Instr{<:VersatilePowerSupply}) = f_query(obj, "VOLTAGE?") * V
+get_voltage(obj::Instrument{<:VersatilePowerSupply}) = f_query(obj, "VOLTAGE?") * V
 
 """
     set_current_limit(obj::Instr{<:VersatilePowerSupply}, num::Current)
@@ -68,7 +68,7 @@ This will change the current limit of a device
 - `obj::Instr{<:VersatilePowerSupply}: Power supply
 - `num::Current`: current limit
 """
-set_current_limit(obj::Instr{<:VersatilePowerSupply}, num::Current) = write(obj, "CURRENT $(raw(num))")
+set_current_limit(obj::Instrument{<:VersatilePowerSupply}, num::Current) = write(obj, "CURRENT $(raw(num))")
 
 """
     get_current_limit(obj::Instr{<:VersatilePowerSupply})
@@ -82,7 +82,7 @@ Supported Instruments:
 # Returns
   Current Limit
 """
-get_current_limit(obj::Instr{<:VersatilePowerSupply}) = query(obj, "CURRENT?")
+get_current_limit(obj::Instrument{<:VersatilePowerSupply}) = query(obj, "CURRENT?")
 
 
 """
@@ -90,11 +90,11 @@ get_current_limit(obj::Instr{<:VersatilePowerSupply}) = query(obj, "CURRENT?")
 
 Set device to remote mode
 """
-remote_mode(obj::Instr{<:VersatilePowerSupply}) = write(obj, "SYSTEM:MODE REMOTE")
+remote_mode(obj::Instrument{<:VersatilePowerSupply}) = write(obj, "SYSTEM:MODE REMOTE")
 
 """
     local_mode(obj::Instr{<:VersatilePowerSupply})
 
 Set device to remote mode
 """
-local_mode(obj::Instr{<:VersatilePowerSupply}) =   write(obj, "SYSTEM:MODE LOCAL")
+local_mode(obj::Instrument{<:VersatilePowerSupply}) =   write(obj, "SYSTEM:MODE LOCAL")

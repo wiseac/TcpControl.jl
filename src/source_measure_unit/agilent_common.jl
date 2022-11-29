@@ -11,7 +11,7 @@
     - measurement
         - "voltage" (Default) | "current" | "resistance"
     - mode
-        - "fixed" (Default) | "list" | "sweep" 
+        - "fixed" (Default) | "list" | "sweep"
     - value specifiers
         - "minimum" | "maximum" | "default" (Default) | "up" (Range-only) | "down" (Range-only)
 
@@ -27,15 +27,15 @@ This will enable an output channel of a device.
 - `(obj::Instr{<:AgilentSourceMeasureUnit}`: AgilentSourceMeasureUnit
 
 # Keywords
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function enable_output(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
+function enable_output(obj::Instrument{<:AgilentSourceMeasureUnit}; channel::Integer=1)
     verify_channel(obj, channel)
     write(obj, ":OUTP$channel ON")
 end
 
-verify_channel(obj::Instr{AgilentB2910BL}, channel) = !(channel in get_valid_channels(obj)) && error("Invalid channel! Refer to device manual.")
-get_valid_channels(obj::Instr{AgilentB2910BL}) = [1]
+verify_channel(obj::Instrument{AgilentB2910BL}, channel) = !(channel in get_valid_channels(obj)) && error("Invalid channel! Refer to device manual.")
+get_valid_channels(obj::Instrument{AgilentB2910BL}) = [1]
 
 """
     disable_output(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
@@ -46,9 +46,9 @@ This will disable an output channel of a device.
 - `(obj::Instr{<:AgilentSourceMeasureUnit}`: AgilentSourceMeasureUnit
 
 # Keywords
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function disable_output(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1) 
+function disable_output(obj::Instrument{<:AgilentSourceMeasureUnit}; channel::Integer=1)
     verify_channel(obj, channel)
     write(obj, ":OUTP$channel OFF")
 end
@@ -62,10 +62,10 @@ This will set the selected channel's source output mode.
 
 # Keywords
 - `source::String="voltage""`: channel's output mode
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function set_source(obj::Instr{<:AgilentSourceMeasureUnit}; source::String="voltage", channel::Integer=1)
-    verify_channel(obj, channel) 
+function set_source(obj::Instrument{<:AgilentSourceMeasureUnit}; source::String="voltage", channel::Integer=1)
+    verify_channel(obj, channel)
     write(obj, ":SOUR$channel:FUNC:MODE $source")
 end
 
@@ -78,10 +78,10 @@ This will get the selected channel's source output mode.
 - `(obj::Instr{<:AgilentSourceMeasureUnit}`: AgilentSourceMeasureUnit
 
 # Keywords
-=- `channel::Integer=1`: specific channel 
+=- `channel::Integer=1`: specific channel
 """
-function get_source(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
-    verify_channel(obj, channel) 
+function get_source(obj::Instrument{<:AgilentSourceMeasureUnit}; channel::Integer=1)
+    verify_channel(obj, channel)
     query(obj, ":SOUR$channel:FUNC:MODE?")
 end
 """
@@ -94,9 +94,9 @@ This will set the selected channel's output voltage.
 
 # Keywords
 - `voltage="default"`: channel's output voltage
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function set_voltage_output(obj::Instr{<:AgilentSourceMeasureUnit}, voltage="default"; channel::Integer=1)
+function set_voltage_output(obj::Instrument{<:AgilentSourceMeasureUnit}, voltage="default"; channel::Integer=1)
     verify_voltage(voltage)
     verify_channel(obj, channel)
     _set_voltage_output(obj, voltage, channel)
@@ -115,9 +115,9 @@ This will set the selected channel's output current.
 
 # Keywords
 - `current="default"`: current limit
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function set_current_output(obj::Instr{<:AgilentSourceMeasureUnit}, current="default"; channel::Integer=1)
+function set_current_output(obj::Instrument{<:AgilentSourceMeasureUnit}, current="default"; channel::Integer=1)
     verify_current(current)
     verify_channel(obj, channel)
     _set_current_output(obj, current, channel)
@@ -136,9 +136,9 @@ This will set the selected channel's output current limit. The limit is applied 
 
 # Keywords
 - `voltage="default"`: voltage limit
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function set_voltage_limit(obj::Instr{<:AgilentSourceMeasureUnit}, voltage="default"; channel::Integer=1)
+function set_voltage_limit(obj::Instrument{<:AgilentSourceMeasureUnit}, voltage="default"; channel::Integer=1)
     verify_voltage(voltage)
     verify_channel(obj, channel)
     _set_voltage_limit(obj, voltage, channel)
@@ -157,9 +157,9 @@ This will set the selected channel's output current limit. The limit is applied 
 
 # Keywords
 - `current="default"`: current limit
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function set_current_limit(obj::Instr{<:AgilentSourceMeasureUnit}, current="default"; channel::Integer=1)
+function set_current_limit(obj::Instrument{<:AgilentSourceMeasureUnit}, current="default"; channel::Integer=1)
     verify_current(current)
     verify_channel(obj, channel)
     _set_current_limit(obj, current, channel)
@@ -185,7 +185,7 @@ Enabling resistance will enable voltage and current measurement modes as well.
 - `resistance=false`: does not enable channel's specified functions
 - `channel::Integer=1`: specfic channel
 """
-function set_measurement_mode(obj::Instr{<:AgilentSourceMeasureUnit};
+function set_measurement_mode(obj::Instrument{<:AgilentSourceMeasureUnit};
     voltage=false, current=false, resistance=false, channel::Integer=1
     )
 
@@ -215,7 +215,7 @@ end
 """
     enable_autorange(obj::Instr{<:AgilentSourceMeasureUnit}; source="voltage", channel::Integer=1)
 
-This will enable an output channel's automatic ranging. 
+This will enable an output channel's automatic ranging.
 
 # Arguments
 - `obj::Instr{<:AgilentSourceMeasureUnit}`: AgilentSourceMeasureUnit
@@ -224,7 +224,7 @@ This will enable an output channel's automatic ranging.
 - `source::String="voltage"`: source output
 - `channel::Integer=1`: specific channel
 """
-function enable_autorange(obj::Instr{<:AgilentSourceMeasureUnit}; source::String="voltage", channel::Integer=1)
+function enable_autorange(obj::Instrument{<:AgilentSourceMeasureUnit}; source::String="voltage", channel::Integer=1)
     verify_source(source)
     verify_channel(obj, channel)
     _enable_autorange(obj, source, channel)
@@ -236,7 +236,7 @@ _enable_autorange(obj, source, channel) = write(obj, "SOUR$channel:$source:RANG:
 """
     disable_autorange(obj::Instr{<:AgilentSourceMeasureUnit}; source="voltage", channel::Integer=1)
 
-This will disable an output channel's automatic ranging. If automatic ranging disabled, the source output 
+This will disable an output channel's automatic ranging. If automatic ranging disabled, the source output
 is performed using the range set [SOURce]:<CURRent|VOLTage>:RANGe command.
 
 # Arguments
@@ -246,7 +246,7 @@ is performed using the range set [SOURce]:<CURRent|VOLTage>:RANGe command.
 - `source::String="voltage"`: source output
 - `channel::Integer=1`: specific channel
 """
-function disable_autorange(obj::Instr{<:AgilentSourceMeasureUnit}; source::String="voltage", channel::Integer=1)
+function disable_autorange(obj::Instrument{<:AgilentSourceMeasureUnit}; source::String="voltage", channel::Integer=1)
     verify_source(source)
     verify_channel(obj, channel)
     _disable_autorange(obj, source, channel)
@@ -267,10 +267,10 @@ Executes a spot (one-shot) measurement and returns the measurement result data.
 - ` measurement::String`: measurement
 - `channel::Integer=1`: specific channel
 
-# Returns 
+# Returns
 - `attach_unit!`: measurement result data
 """
-function spot_measurement(obj::Instr{<:AgilentSourceMeasureUnit}, measurement::String; channel::Integer=1)
+function spot_measurement(obj::Instrument{<:AgilentSourceMeasureUnit}, measurement::String; channel::Integer=1)
     verify_measurement(measurement)
     verify_channel(obj, channel)
     val  = _spot_single_measurement(obj, measurement, channel)
@@ -285,7 +285,7 @@ function attach_unit!(value, unit)
     elseif unit == "current"
         value = value * A
     elseif unit == "resistance"
-        value = value * R 
+        value = value * R
     end
 
     return value
@@ -305,7 +305,7 @@ Executes a spot (one-shot) measurement and returns valid voltage, current, and r
 # Returns
 - `Array`: valid voltage, current, and resistance if type is not specified
 """
-function spot_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
+function spot_measurement(obj::Instrument{<:AgilentSourceMeasureUnit}; channel::Integer=1)
     verify_channel(obj, channel)
     specify_element_format_vcr(obj)
     arr = _spot_measurement(obj, channel)
@@ -339,7 +339,7 @@ This will set a source channel mode.
 - `mode::String="fixed"`: mode
 - `channel::Integer=1`: specific channel
 """
-function set_source_mode(obj::Instr{<:AgilentSourceMeasureUnit}; source::String="voltage", mode::String="fixed", channel::Integer=1)
+function set_source_mode(obj::Instrument{<:AgilentSourceMeasureUnit}; source::String="voltage", mode::String="fixed", channel::Integer=1)
     verify_source(source)
     verify_source_mode(mode)
     verify_channel(obj, channel)
@@ -364,7 +364,7 @@ This will get a source channel mode.
 # Returns
 - `Source Mode`
 """
-function get_source_mode(obj::Instr{<:AgilentSourceMeasureUnit}; source::String="voltage", channel::Integer=1)
+function get_source_mode(obj::Instrument{<:AgilentSourceMeasureUnit}; source::String="voltage", channel::Integer=1)
     verify_source(source)
     verify_channel(obj, channel)
     return _get_source_mode(obj, source, channel)
@@ -373,23 +373,23 @@ end
 _get_source_mode(obj, source, channel) = query(obj, "SOUR$channel:$source:MODE?")
 
 """
-    set_voltage_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit}; 
-    start="default", 
-    stop="default", 
-    step="default", 
+    set_voltage_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit};
+    start="default",
+    stop="default",
+    step="default",
     channel::Integer=1)
 
-This will set a channel's voltage source start, stop, step, and trigger point value for sweep output. 
+This will set a channel's voltage source start, stop, step, and trigger point value for sweep output.
 points = span/step + 1 (where step is not 0)
 span = stop - start
 
 # Arguments
 - `obj::Instr{<:AgilentSourceMeasureUnit}`: AgilentSourceMeasureUnit
 """
-function set_voltage_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit}; 
-    start="default", 
-    stop="default", 
-    step="default", 
+function set_voltage_sweep_parameters(obj::Instrument{<:AgilentSourceMeasureUnit};
+    start="default",
+    stop="default",
+    step="default",
     channel::Integer=1)
 
     verify_channel(obj, channel)
@@ -399,7 +399,7 @@ function set_voltage_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit};
     set_voltage_trigger_points(obj; channel)
 end
 
-function set_voltage_sweep_start(obj::Instr{<:AgilentSourceMeasureUnit}; start="default", channel::Integer=1) 
+function set_voltage_sweep_start(obj::Instrument{<:AgilentSourceMeasureUnit}; start="default", channel::Integer=1)
     verify_start(start)
     _set_voltage_sweep_start(obj, start, channel)
     return nothing
@@ -407,7 +407,7 @@ end
 
 _set_voltage_sweep_start(obj, start, channel) = write(obj, "SOUR$channel:VOLT:START $(raw(start))")
 
-function set_voltage_sweep_stop(obj::Instr{<:AgilentSourceMeasureUnit}; stop="default", channel::Integer=1) 
+function set_voltage_sweep_stop(obj::Instrument{<:AgilentSourceMeasureUnit}; stop="default", channel::Integer=1)
     verify_stop(stop)
     _set_voltage_sweep_stop(obj, stop, channel)
     return nothing
@@ -415,15 +415,15 @@ end
 
 _set_voltage_sweep_stop(obj, stop, channel) = write(obj, "SOUR$channel:VOLT:STOP $(raw(stop))")
 
-function set_voltage_sweep_step(obj::Instr{<:AgilentSourceMeasureUnit}; step="default", channel::Integer=1) 
+function set_voltage_sweep_step(obj::Instrument{<:AgilentSourceMeasureUnit}; step="default", channel::Integer=1)
     verify_step(step)
-    _set_voltage_sweep_step(obj, step, channel) 
+    _set_voltage_sweep_step(obj, step, channel)
     return nothing
 end
 
 _set_voltage_sweep_step(obj, step, channel) = write(obj, "SOUR$channel:VOLT:STEP $(raw(step))")
 
-function set_voltage_trigger_points(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
+function set_voltage_trigger_points(obj::Instrument{<:AgilentSourceMeasureUnit}; channel::Integer=1)
     verify_channel(obj, channel)
     span = _get_voltage_span(obj, channel)
     step = _get_voltage_step(obj, channel)
@@ -432,7 +432,7 @@ function set_voltage_trigger_points(obj::Instr{<:AgilentSourceMeasureUnit}; chan
 end
 
 _get_voltage_span(obj, channel) = f_query(obj, ":SOUR$channel:VOLT:SPAN?")
-_get_voltage_step(obj, channel) = f_query(obj, ":SOUR$channel:VOLT:STEP?") 
+_get_voltage_step(obj, channel) = f_query(obj, ":SOUR$channel:VOLT:STEP?")
 
 function _get_trigger_points(span, step)
     if step == 0
@@ -445,13 +445,13 @@ end
 _set_voltage_trigger_points(obj, points, channel) = write(obj, ":TRIG$channel:ALL:COUN $points")
 
 """
-    set_current_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit}; 
-    start="default", 
-    stop="default", 
-    step="default", 
+    set_current_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit};
+    start="default",
+    stop="default",
+    step="default",
     channel::Integer=1)
 
-This will set a channel's current source start, stop, step, and trigger point value for sweep output. 
+This will set a channel's current source start, stop, step, and trigger point value for sweep output.
 points = span/step + 1 (where step is not 0)
 span = stop - start
 
@@ -462,12 +462,12 @@ span = stop - start
 - `start="default"`: channel's current court start
 - `stop="default"`: channel's current court stop
 - `step="default"`: channel's current court step
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function set_current_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit}; 
-    start="default", 
-    stop="default", 
-    step="default", 
+function set_current_sweep_parameters(obj::Instrument{<:AgilentSourceMeasureUnit};
+    start="default",
+    stop="default",
+    step="default",
     channel::Integer=1)
 
     verify_channel(obj, channel)
@@ -477,7 +477,7 @@ function set_current_sweep_parameters(obj::Instr{<:AgilentSourceMeasureUnit};
     set_current_trigger_points(obj; channel)
 end
 
-function set_current_sweep_start(obj::Instr{<:AgilentSourceMeasureUnit}; start="default", channel::Integer=1) 
+function set_current_sweep_start(obj::Instrument{<:AgilentSourceMeasureUnit}; start="default", channel::Integer=1)
     verify_start(start)
     _set_current_sweep_start(obj, start, channel)
     return nothing
@@ -485,7 +485,7 @@ end
 
 _set_current_sweep_start(obj, start, channel) = write(obj, "SOUR$channel:CURR:START $(raw(start))")
 
-function set_current_sweep_stop(obj::Instr{<:AgilentSourceMeasureUnit}; stop="default", channel::Integer=1) 
+function set_current_sweep_stop(obj::Instrument{<:AgilentSourceMeasureUnit}; stop="default", channel::Integer=1)
     verify_stop(stop)
     _set_current_sweep_stop(obj, stop, channel)
     return nothing
@@ -493,7 +493,7 @@ end
 
 _set_current_sweep_stop(obj, stop, channel) = write(obj, "SOUR$channel:CURR:STOP $(raw(stop))")
 
-function set_current_sweep_step(obj::Instr{<:AgilentSourceMeasureUnit}; step="default", channel::Integer=1) 
+function set_current_sweep_step(obj::Instrument{<:AgilentSourceMeasureUnit}; step="default", channel::Integer=1)
     verify_step(step)
     _set_current_sweep_step(obj, step, channel)
     return nothing
@@ -501,7 +501,7 @@ end
 
 _set_current_sweep_step(obj, step, channel) = write(obj, "SOUR$channel:CURR:STEP $(raw(step))")
 
-function set_current_trigger_points(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
+function set_current_trigger_points(obj::Instrument{<:AgilentSourceMeasureUnit}; channel::Integer=1)
     span = _get_current_span(obj, channel)
     step = _get_current_step(obj, channel)
     points =  _get_trigger_points(span, step)
@@ -509,7 +509,7 @@ function set_current_trigger_points(obj::Instr{<:AgilentSourceMeasureUnit}; chan
 end
 
 _get_current_span(obj, channel) = f_query(obj, ":SOUR$channel:CURR:SPAN?")
-_get_current_step(obj, channel) = f_query(obj, ":SOUR$channel:CURR:STEP?") 
+_get_current_step(obj, channel) = f_query(obj, ":SOUR$channel:CURR:STEP?")
 _set_current_trigger_points(obj, points, channel) = write(obj, ":TRIG$channel:ALL:COUN $points")
 
 """
@@ -522,9 +522,9 @@ This will set an output channel's measurement range.
 - `range`: range for channel's measurement
 
 # Keywords
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function set_measurement_range(obj::Instr{<:AgilentSourceMeasureUnit}, range; channel::Integer=1)
+function set_measurement_range(obj::Instrument{<:AgilentSourceMeasureUnit}, range; channel::Integer=1)
     verify_channel(obj, channel)
     _set_measurement_range(obj, range, channel)
     return nothing
@@ -546,13 +546,13 @@ This will set an output channel's measurement range.
 # Keywords
 - `measurement::String="voltage"`: measurement type
 - `range::String="default"``: range for channel's measurement
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function set_measurement_range(obj::Instr{<:AgilentSourceMeasureUnit}; measurement::String="voltage", range::String="default", channel::Integer=1)
+function set_measurement_range(obj::Instrument{<:AgilentSourceMeasureUnit}; measurement::String="voltage", range::String="default", channel::Integer=1)
     verify_measurement(measurement)
     verify_range(range)
     verify_channel(obj, channel)
-    _set_measurement_range(obj, measurement, range, channel) 
+    _set_measurement_range(obj, measurement, range, channel)
     return nothing
 end
 
@@ -563,7 +563,7 @@ verify_range(range::String) = !(range in ["minimum", "maximum", "default", "UP",
 """
     set_measurement_duration(obj::Instr{<:AgilentSourceMeasureUnit}; aperture="default", channel::Integer=1)
 
-This will set an output channel's integration time for one point measurement. 
+This will set an output channel's integration time for one point measurement.
 Measurement type is not important since time value is common for voltage, current, and resistance.
 If value set is less than MIN or greater than MAX, time is automatically set to MIN or MAX.
 
@@ -572,9 +572,9 @@ If value set is less than MIN or greater than MAX, time is automatically set to 
 
 # Keywords
 - `aperture="default"`: measurement type
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function set_measurement_duration(obj::Instr{<:AgilentSourceMeasureUnit}; aperture="default", channel::Integer=1)
+function set_measurement_duration(obj::Instrument{<:AgilentSourceMeasureUnit}; aperture="default", channel::Integer=1)
     verify_aperture(aperture)
     verify_channel(obj, channel)
     _set_measurement_duration(obj, aperture, channel)
@@ -593,9 +593,9 @@ Adjust voltage and current limit if necessary.
 - `obj::Instr{<:AgilentSourceMeasureUnit}`: AgilentSourceMeasureUnit
 
 # Keywords
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 """
-function start_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1) 
+function start_measurement(obj::Instrument{<:AgilentSourceMeasureUnit}; channel::Integer=1)
     verify_channel(obj, channel)
     write(obj, ":INIT (@$channel)")
 end
@@ -603,19 +603,19 @@ end
 """
     get_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
 
-Get measurement stored by start_measurement(). 
+Get measurement stored by start_measurement().
 Returns voltage, current, resistance, and time.
 
 # Arguments
 - `obj::Instr{<:AgilentSourceMeasureUnit}`: AgilentSourceMeasureUnit
 
 # Keywords
-- `channel::Integer=1`: specific channel 
+- `channel::Integer=1`: specific channel
 
 # Returns
 - `SourceMeasureUnitData`: measurement data from AgilentSourceMeasureUnit
 """
-function get_measurement(obj::Instr{<:AgilentSourceMeasureUnit}; channel::Integer=1)
+function get_measurement(obj::Instrument{<:AgilentSourceMeasureUnit}; channel::Integer=1)
     verify_channel(obj, channel)
     voltage = _get_voltage(obj, channel)
     current = _get_current(obj, channel)

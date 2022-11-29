@@ -6,7 +6,7 @@ Supported Instruments:
   - [`Versatile2005XRLXI`](@ref)
   - [`Versatile10010XRLXI`](@ref)
 """
-abstract type PowerSupply <: Instrument end
+abstract type PowerSupply <: AbstractInstrument end
 
 
 """

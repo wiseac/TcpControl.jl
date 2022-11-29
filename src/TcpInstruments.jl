@@ -62,7 +62,7 @@ const A = u"A"
 const Hz = u"Hz"
 const SMU_NAN = 9.91e37
 
-export Instrument
+export AbstractInstrument
 export Oscilloscope, Multimeter, PowerSupply
 export WaveformGenerator, ImpedanceAnalyzer, SourceMeasureUnit
 export AgilentScope, KeysightMultimeter, AgilentImpedAnalyzer, SRSPowerSupply

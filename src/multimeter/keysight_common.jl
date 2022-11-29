@@ -6,10 +6,10 @@ Perform take a measurement with the probe mode set to thermocouple
 # Arguments
 - `obj::Instr{<:KeysightMultimeter}}`: Multimeter
 
-# Returns 
+# Returns
 - `Float64`: tc temperature
 """
-function get_tc_temperature(obj::Instr{<:KeysightMultimeter})
+function get_tc_temperature(obj::Instrument{<:KeysightMultimeter})
     units = get_temp_unit(obj)
     return f_query(obj, "MEASURE:TEMPERATURE? TC"; timeout=0) * units
 end
@@ -25,7 +25,7 @@ Sets TC Type
 # Keywords
 - `type`: Can be E, J, K, N, R, T (Defaults to K)
 """
-function set_tc_type(obj::Instr{<:KeysightMultimeter}; type="K")
+function set_tc_type(obj::Instrument{<:KeysightMultimeter}; type="K")
     if !(string(type) in ["E", "J", "K", "N", "R", "T"])
         error("$type must be one of [E, J, K, N, R, T]")
     end
@@ -39,7 +39,7 @@ Returns voltage
 - `type`: "DC" | "AC" (Default DC)
 
 """
-function get_voltage(obj::Instr{<:KeysightMultimeter}; type="DC")
+function get_voltage(obj::Instrument{<:KeysightMultimeter}; type="DC")
     !(type in ["AC","DC"]) && error("$type not valid!\nMust be AC or DC")
     f_query(obj, "MEASURE:VOLTAGE:$type?"; timeout=0) * V
 end
@@ -56,7 +56,7 @@ Returns current
 # Keywords
 - `type`: "DC" | "AC" (Default DC)
 """
-function get_current(obj::Instr{<:KeysightMultimeter}; type="DC")
+function get_current(obj::Instrument{<:KeysightMultimeter}; type="DC")
     !(type in ["AC","DC"]) && error("$type not valid!\nMust be AC or DC")
     f_query(obj, "MEASURE:CURRENT:$type?"; timeout=0) * A
 end
@@ -73,7 +73,7 @@ Returns resistance
 # Keywords
 - `wire`: 2 | 4 (Required)
 """
-function get_resistance(obj::Instr{<:KeysightMultimeter}; wire)
+function get_resistance(obj::Instrument{<:KeysightMultimeter}; wire)
     if wire == 2
         f_query(obj, "MEASURE:RESISTANCE?"; timeout=0) * R
     elseif wire == 4
@@ -91,7 +91,7 @@ Sets the temperature unit to celcius
 # Arguments
 - `obj::Instr{<:KeysightMultimeter}}`: Multimeter
 """
-set_temp_unit_celsius(obj::Instr{<:KeysightMultimeter}) =
+set_temp_unit_celsius(obj::Instrument{<:KeysightMultimeter}) =
     write(obj, "UNIT:TEMPERATURE C")
 
 """
@@ -102,7 +102,7 @@ Sets the temperature unit to farenheit
 # Arguments
 - `obj::Instr{<:KeysightMultimeter}}`: Multimeter
 """
-set_temp_unit_farenheit(obj::Instr{<:KeysightMultimeter}) =
+set_temp_unit_farenheit(obj::Instrument{<:KeysightMultimeter}) =
     write(obj, "UNIT:TEMPERATURE F")
 
 """
@@ -113,7 +113,7 @@ Sets the temperature unit to kelvin
 # Arguments
 - `obj::Instr{<:KeysightMultimeter}}`: Multimeter
 """
-set_temp_unit_kelvin(obj::Instr{<:KeysightMultimeter}) =
+set_temp_unit_kelvin(obj::Instrument{<:KeysightMultimeter}) =
     write(obj, "UNIT:TEMPERATURE K")
 
 """
@@ -127,7 +127,7 @@ Returns set temperature unit
 # Returns
 - `u`: C, F or K
 """
-function get_temp_unit(obj::Instr{<:KeysightMultimeter})
+function get_temp_unit(obj::Instrument{<:KeysightMultimeter})
    units = query(obj, "UNIT:TEMPERATURE?")
    return if units == "C"
        u"C"
@@ -154,5 +154,5 @@ instrument's safety features.
 # Returns
 - "FRON" or "REAR"
 """
-get_channel(obj::Instr{<:KeysightMultimeter}) =
+get_channel(obj::Instrument{<:KeysightMultimeter}) =
     query(obj, "ROUTE:TERMINALS?")

@@ -4,7 +4,7 @@ Supported Instruments:
   - [`Agilent4294A`](@ref)
   - [`Agilent4395A`](@ref)
 """
-abstract type ImpedanceAnalyzer <: Instrument end
+abstract type ImpedanceAnalyzer <: AbstractInstrument end
 
 
 """

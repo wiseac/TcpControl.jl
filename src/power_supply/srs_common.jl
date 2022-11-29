@@ -6,7 +6,7 @@ This will enable an output on a device.
 # Arguments
 - `obj::Instr{<:SRSPowerSupply}`: Power Supply Instrument
 """
-enable_output(obj::Instr{<:SRSPowerSupply}) = write(obj, "HVON")
+enable_output(obj::Instrument{<:SRSPowerSupply}) = write(obj, "HVON")
 
 """
     disable_output(obj::Instr{<:SRSPowerSupply})
@@ -16,7 +16,7 @@ This will disable an output on a device.
 # Arguments
 - `obj::Instr{<:SRSPowerSupply}`: Power Supply Instrument
 """
-disable_output(obj::Instr{<:SRSPowerSupply}) = write(obj, "HVOF")
+disable_output(obj::Instrument{<:SRSPowerSupply}) = write(obj, "HVOF")
 
 """
     get_output_status(obj::Instr{<:SRSPowerSupply})
@@ -29,7 +29,7 @@ This will get and return whether the output from SRSPS310 is enabled.
 - `String`: "ON" if High Voltage Output is On
     "OFF" if High Voltage Output is Off
 """
-get_output_status(obj::Instr{<:SRSPowerSupply}) = query(obj, "*STB? 7") == "1" ? "ON" : "OFF"
+get_output_status(obj::Instrument{<:SRSPowerSupply}) = query(obj, "*STB? 7") == "1" ? "ON" : "OFF"
 
 
 """
@@ -39,12 +39,12 @@ Sets the output voltage output of a SRSPS310 power supply.
 
 # Arguments
 - `obj::Instr{<:SRSPowerSupply}`: Power Supply Instrument
-- `v_end::Voltage`: voltage 
+- `v_end::Voltage`: voltage
 
 # Keywords
-- `delta_volt::Voltage=Inf*u"V"`: sets the maximum of each voltage step 
+- `delta_volt::Voltage=Inf*u"V"`: sets the maximum of each voltage step
     can be used to set the ramping speed when setting a new voltage.
-- `delta_time::Time=100u"ms"`: sets the minimum time between each voltage update 
+- `delta_time::Time=100u"ms"`: sets the minimum time between each voltage update
     can be used to set the ramping speed when setting a new voltage.
 - `verbose::Bool=false`:  when true prints info on ramping speed and steps
 
@@ -60,7 +60,7 @@ julia> set_voltage(psu_h, 1100"mV")
 julia> set_voltage(psu_h, 100"V", delta_volt = 2u"V", delta_time=100u"ms", verbose=true)
 ```
 """
-function set_voltage(obj::Instr{<:SRSPowerSupply}, v_end::Voltage; delta_volt::Voltage=Inf*u"V", delta_time::Time=100u"ms", verbose::Bool=false)
+function set_voltage(obj::Instrument{<:SRSPowerSupply}, v_end::Voltage; delta_volt::Voltage=Inf*u"V", delta_time::Time=100u"ms", verbose::Bool=false)
     if delta_volt == Inf*u"V"
         _set_voltage(obj, v_end)
     else # TODO: Fix for negative ramps
@@ -86,7 +86,7 @@ function set_voltage(obj::Instr{<:SRSPowerSupply}, v_end::Voltage; delta_volt::V
     return nothing
 end
 
-_set_voltage(obj::Instr{<:SRSPowerSupply}, v::Voltage) = write(obj, "VSET$(raw(v))")
+_set_voltage(obj::Instrument{<:SRSPowerSupply}, v::Voltage) = write(obj, "VSET$(raw(v))")
 
 """
     get_voltage(obj::Instr{<:SRSPowerSupply})
@@ -101,7 +101,7 @@ Voltage Limit: 1250V
 # Returns
 - `Voltage`
 """
-get_voltage(obj::Instr{<:SRSPowerSupply}) = f_query(obj, "VSET?") * V
+get_voltage(obj::Instrument{<:SRSPowerSupply}) = f_query(obj, "VSET?") * V
 
 """
     set_voltage_limit(::SRSPS310, voltage_limit)
@@ -114,7 +114,7 @@ Max Voltage Limit: 1250V
 - `obj::Instr{<:SRSPowerSupply}`: Power Supply Instrument
 - `num::Voltage`: voltage limit
 """
-set_voltage_limit(obj::Instr{<:SRSPowerSupply}, num::Voltage) = write(obj, "VLIM$(raw(num))")
+set_voltage_limit(obj::Instrument{<:SRSPowerSupply}, num::Voltage) = write(obj, "VLIM$(raw(num))")
 
 """
     get_voltage_limit(obj::Instr{<:SRSPowerSupply})
@@ -129,7 +129,7 @@ Voltage Limit: 1250V
 # Returns
 - `Voltage`
 """
-get_voltage_limit(obj::Instr{<:SRSPowerSupply}) = f_query(obj, "VLIM?") * V
+get_voltage_limit(obj::Instrument{<:SRSPowerSupply}) = f_query(obj, "VLIM?") * V
 
 """
     set_current_limit(obj::Instr{<:SRSPowerSupply}, num::Current)
@@ -142,7 +142,7 @@ Max Value: { 2.1e-3 | 0.021 } (21mA)
 # Arguments
 - `obj::Instr{<:SRSPowerSupply}`: Power Supply Instrument
 """
-function set_current_limit(obj::Instr{<:SRSPowerSupply}, num::Current)
+function set_current_limit(obj::Instrument{<:SRSPowerSupply}, num::Current)
     write(obj, "ILIM$(raw(num))")
 end
 
@@ -157,4 +157,4 @@ This will return the current limit of a device.
 # Returns
 - `Current Limit`
 """
-get_current_limit(obj::Instr{<:SRSPowerSupply}) = f_query(obj, "ILIM?") * A
+get_current_limit(obj::Instrument{<:SRSPowerSupply}) = f_query(obj, "ILIM?") * A

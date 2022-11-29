@@ -3,14 +3,14 @@ Base.@kwdef struct FakeDSOX4034A <: Oscilloscope
 end
 
 function initialize(model::Type{FakeDSOX4034A})
-    return Instr{model}(model(), "", TCPSocket(), true)
+    return Instrument{model}(model(), "", TCPSocket(), true)
 end
 
 function initialize(model::FakeDSOX4034A)
-    return Instr{typeof(model)}(model, "", TCPSocket(), true)
+    return Instrument{typeof(model)}(model, "", TCPSocket(), true)
 end
 
-function get_data(instr::Instr{FakeDSOX4034A}, ch::Vector{Int}) 
+function get_data(instr::Instrument{FakeDSOX4034A}, ch::Vector{Int})
     for num in ch
         if num < 1 || num > 4
             error("$num is not a valid channel")
@@ -19,10 +19,10 @@ function get_data(instr::Instr{FakeDSOX4034A}, ch::Vector{Int})
     map(c->get_data(instr, c), ch)
 end
 
-num_samples(i::Instr{FakeDSOX4034A}) = i.model.num_samples
+num_samples(i::Instrument{FakeDSOX4034A}) = i.model.num_samples
 
 
-function get_data(instr::Instr{FakeDSOX4034A}, ch::Int)
+function get_data(instr::Instrument{FakeDSOX4034A}, ch::Int)
     info = get_default_scope_info(instr, ch)
     samples = info.num_points
 
@@ -40,7 +40,7 @@ function get_data(instr::Instr{FakeDSOX4034A}, ch::Int)
 end
 
 
-function get_default_scope_info(scope::Instr{FakeDSOX4034A}, channel::Int)
+function get_default_scope_info(scope::Instrument{FakeDSOX4034A}, channel::Int)
     format = "8bit"
     type = "Normal"
     num_points = num_samples(scope)
@@ -53,13 +53,13 @@ function get_default_scope_info(scope::Instr{FakeDSOX4034A}, channel::Int)
     impedance = "ONEM"
     coupling = "DC"
     low_pass_filter = ""
-    return ScopeInfo(format, type, num_points, 
+    return ScopeInfo(format, type, num_points,
                      x_increment, x_origin, x_reference,
-                     y_increment, y_origin, y_reference, 
+                     y_increment, y_origin, y_reference,
                      impedance, coupling, low_pass_filter, channel)
 end
 
 
-function get_waveform_info(scope::Instr{FakeDSOX4034A}, channel::Int)
+function get_waveform_info(scope::Instrument{FakeDSOX4034A}, channel::Int)
     return get_default_scope_info(scope, channel)
 end

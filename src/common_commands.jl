@@ -1,5 +1,5 @@
 ## Utils
-instrument_reset(obj::Instrument)    = write(obj, "*RST")
+instrument_reset(obj::AbstractInstrument)    = write(obj, "*RST")
 instrument_clear(obj)    = write(obj, "*CLS")
 instrument_get_id(obj)   = query(obj, "*IDN?")
 instrument_beep_on(obj)  = write(obj,"SYST:BEEP:STAT on")
@@ -7,7 +7,7 @@ instrument_beep_off(obj) = write(obj,"SYST:BEEP:STAT off")
 instrument_query_complete(obj) = query(obj,"*OPC?")
 instrument_wait_complete(obj)  = query(obj,"*WAI")
 instrument_query_error(obj)    = query(obj,"SYST:ERR?")
-function instrument_empty_buffer(instr)  
+function instrument_empty_buffer(instr)
     dummy = read(instr)
     return nothing
 end

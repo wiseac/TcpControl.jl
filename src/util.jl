@@ -139,11 +139,11 @@ Searches for devices connected on port:
 - 1234 (prologix)
 
 # Keywords
-- `network="10.1.30."`: IP address 
+- `network="10.1.30."`: IP address
 - `host_range=1:255`: range for IP address
 
 # Returns
-- `Array`: IP Addresses 
+- `Array`: IP Addresses
 """
 function scan_network(; network="10.1.30.", host_range=1:255)
     network = ensure_ending_dot(network)
@@ -187,7 +187,7 @@ kill_task(proc) = schedule(proc, ErrorException("Timed out"), error=true)
 
 function _get_instr_info_and_close(ip)
 
-    obj = initialize(Instrument, ip)
+    obj = initialize(AbstractInstrument, ip)
     info_str = info(obj)
     terminate(obj)
     return info_str
@@ -201,14 +201,14 @@ Scans all GPIB addresses on a prologix device having the ip-address `ip`.
 # Arguments
 - `ip::AbstractString`: IP address
 
-# Returns 
+# Returns
 - `Dict`: devices
 """
 function scan_prologix(ip::AbstractString)
     devices = Dict()
     prologix_port = ":1234"
     full_ip = ip * prologix_port
-    obj = initialize(Instrument, ip)
+    obj = initialize(AbstractInstrument, ip)
 
     for i in 0:15
         write(obj, "++addr $i")

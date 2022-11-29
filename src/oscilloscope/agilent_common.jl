@@ -20,25 +20,25 @@ from all available channels
 # Throws
 - `"Channel is offline, data cannot be read"`: if channel is offline
 """
-function get_data(instr::Instr{<:AgilentScope})
+function get_data(instr::Instrument{<:AgilentScope})
     ch_vec = get_valid_channels(instr)
     @info "Loading channels: $ch_vec"
     return get_data(instr, ch_vec; check_channels=false)
 end
 
-get_valid_channels(instr::Instr{AgilentDSOX4024A}) = [1,2,3,4]
-get_valid_channels(instr::Instr{AgilentDSOX4034A}) = [1,2,3,4]
+get_valid_channels(instr::Instrument{AgilentDSOX4024A}) = [1,2,3,4]
+get_valid_channels(instr::Instrument{AgilentDSOX4034A}) = [1,2,3,4]
 
-function get_valid_channels(instr::Instr{<:AgilentScope})
+function get_valid_channels(instr::Instrument{<:AgilentScope})
     statuses = asyncmap(x->(x, channel_is_displayed(instr, x)), 1:4)
     filter!(x -> x[2], statuses)
     valid_channels = map(x -> x[begin], statuses)
     return valid_channels
 end
-channel_is_displayed(instr::Instr{<:AgilentScope}, chan) = query(instr, "STAT? CHAN$chan") == "1" ? true : false
+channel_is_displayed(instr::Instrument{<:AgilentScope}, chan) = query(instr, "STAT? CHAN$chan") == "1" ? true : false
 
 
-function get_data(instr::Instr{<:AgilentScope}, ch_vec::Vector{Int}; check_channels=true)
+function get_data(instr::Instrument{<:AgilentScope}, ch_vec::Vector{Int}; check_channels=true)
     if check_channels
         unique!(ch_vec)
         valid_channels = get_valid_channels(instr)
@@ -54,7 +54,7 @@ function get_data(instr::Instr{<:AgilentScope}, ch_vec::Vector{Int}; check_chann
     return wfm_data
 end
 
-function get_data(instr::Instr{<:AgilentScope}, ch::Integer)
+function get_data(instr::Instrument{<:AgilentScope}, ch::Integer)
     set_waveform_source(instr, ch)
     raw_data = read_raw_waveform(instr);
     info = get_waveform_info(instr, ch)
@@ -62,10 +62,10 @@ function get_data(instr::Instr{<:AgilentScope}, ch::Integer)
 end
 
 
-set_waveform_source(instr::Instr{<:AgilentScope}, ch::Int) = write(instr, "WAVEFORM:SOURCE CHAN$ch")
+set_waveform_source(instr::Instrument{<:AgilentScope}, ch::Int) = write(instr, "WAVEFORM:SOURCE CHAN$ch")
 
 
-function read_raw_waveform(scope::Instr{<:AgilentScope})
+function read_raw_waveform(scope::Instrument{<:AgilentScope})
     data_transfer_format = get_data_transfer_format(scope)
     if data_transfer_format == "BYTE"
         raw_data = read_uint8(scope)
@@ -78,7 +78,7 @@ function read_raw_waveform(scope::Instr{<:AgilentScope})
 end
 
 
-function read_uint8(scope::Instr{<:AgilentScope})
+function read_uint8(scope::Instrument{<:AgilentScope})
     request_waveform_data(scope)
     num_data_bytes = get_num_data_bytes(scope)
 
@@ -94,7 +94,7 @@ function read_uint8(scope::Instr{<:AgilentScope})
 end
 
 
-function read_uint16(scope::Instr{<:AgilentScope})
+function read_uint16(scope::Instrument{<:AgilentScope})
     set_data_transfer_byte_order(scope, :least_significant_first)
     request_waveform_data(scope)
     num_data_bytes = get_num_data_bytes(scope)
@@ -111,7 +111,7 @@ function read_uint16(scope::Instr{<:AgilentScope})
 end
 
 
-function set_data_transfer_byte_order(scope::Instr{<:AgilentScope}, byte_order::Symbol)
+function set_data_transfer_byte_order(scope::Instrument{<:AgilentScope}, byte_order::Symbol)
     if byte_order == :least_significant_first
         write(scope, "WAVEFORM:BYTEORDER LSBFIRST")
     elseif byte_order == :most_significant_first
@@ -122,18 +122,18 @@ function set_data_transfer_byte_order(scope::Instr{<:AgilentScope}, byte_order::
     return nothing
 end
 
-function get_data_transfer_byte_order(scope::Instr{<:AgilentScope})
+function get_data_transfer_byte_order(scope::Instrument{<:AgilentScope})
     return query(scope, "WAVEFORM:BYTEORDER?")
 end
 
 
-function request_waveform_data(scope::Instr{<:AgilentScope})
+function request_waveform_data(scope::Instrument{<:AgilentScope})
     write(scope, "WAV:DATA?")
     return nothing
 end
 
 
-function get_num_data_bytes(scope::Instr{<:AgilentScope})
+function get_num_data_bytes(scope::Instrument{<:AgilentScope})
     header = get_data_header(scope)
     num_header_description_bytes = 2
     num_data_points = parse(Int, header[num_header_description_bytes+1:end])
@@ -141,7 +141,7 @@ function get_num_data_bytes(scope::Instr{<:AgilentScope})
 end
 
 
-function get_data_header(scope::Instr{<:AgilentScope})
+function get_data_header(scope::Instrument{<:AgilentScope})
     # data header is an ASCII character string "#8DDDDDDDD", where the Ds indicate how many
     # bytes follow (p.1433 of Keysight InfiniiVision 4000 X-Series Oscilloscopes
     # Programmer's Guide)
@@ -158,19 +158,19 @@ function get_data_header(scope::Instr{<:AgilentScope})
 end
 
 
-function read_num_bytes(scope::Instr{<:AgilentScope}, num_bytes)
+function read_num_bytes(scope::Instrument{<:AgilentScope}, num_bytes)
     output = read(scope.sock, num_bytes)
     return output
 end
 
 
-function read_end_of_line_character(scope::Instr{<:AgilentScope})
+function read_end_of_line_character(scope::Instrument{<:AgilentScope})
     read(scope)
     return nothing
 end
 
 
-function get_num_data_points(scope::Instr{<:AgilentScope})
+function get_num_data_points(scope::Instrument{<:AgilentScope})
     return i_query(scope, "WAVEFORM:POINTS?")
 end
 
@@ -187,7 +187,7 @@ Grab channel information and return it in a `ScopeInfo`(@ref) struct
 # Returns
 - `ScopeInfo`: Struct of scope information
 """
-function get_waveform_info(instr::Instr{<:AgilentScope}, ch::Integer)
+function get_waveform_info(instr::Instrument{<:AgilentScope}, ch::Integer)
     str = get_waveform_preamble(instr)
     str_array = split(str, ",")
     format      = RESOLUTION_MODE[str_array[1]]
@@ -241,7 +241,7 @@ end
 # Returns
 - `String`: "AC" or "DC"
 """
-get_coupling(instr::Instr{<:AgilentScope}; chan=1) = query(instr, "CHANNEL$chan:COUPLING?")
+get_coupling(instr::Instrument{<:AgilentScope}; chan=1) = query(instr, "CHANNEL$chan:COUPLING?")
 
 
 """
@@ -256,7 +256,7 @@ the specified channel is limited to approximately 25 MHz.
 # Keywords
 - `chan=1`: specific channel
 """
-lpf_on(instr::Instr{<:AgilentScope}; chan=1) = write(instr, "CHANNEL$chan:BWLIMIT ON")
+lpf_on(instr::Instrument{<:AgilentScope}; chan=1) = write(instr, "CHANNEL$chan:BWLIMIT ON")
 
 
 """
@@ -270,7 +270,7 @@ Turn off an internal low-pass filter.
 # Keywords
 - `chan=1`: specific channel
 """
-lpf_off(instr::Instr{<:AgilentScope}; chan=1) = write(instr, "CHANNEL$chan:BWLIMIT OFF")
+lpf_off(instr::Instrument{<:AgilentScope}; chan=1) = write(instr, "CHANNEL$chan:BWLIMIT OFF")
 
 
 """
@@ -287,7 +287,7 @@ See state the internal low-pass filter:
 # Returns
 - `String`: "0" or "1"
 """
-get_lpf_state(instr::Instr{<:AgilentScope}; chan=1) = query(instr, "CHANNEL$chan:BWLIMIT?")
+get_lpf_state(instr::Instrument{<:AgilentScope}; chan=1) = query(instr, "CHANNEL$chan:BWLIMIT?")
 
 
 """
@@ -301,7 +301,7 @@ Set impedance to 1MΩ
 # Keywords
 - `chan=1`: specific channel
 """
-set_impedance_1Mohm(instr::Instr{<:AgilentScope}; chan=1) = write(instr, ":CHANNEL$chan:IMPEDANCE ONEMEG")
+set_impedance_1Mohm(instr::Instrument{<:AgilentScope}; chan=1) = write(instr, ":CHANNEL$chan:IMPEDANCE ONEMEG")
 
 
 """
@@ -315,7 +315,7 @@ Set impedance to 50Ω
 # Keywords
 - `chan=1`: specific channel
 """
-set_impedance_50ohm(instr::Instr{<:AgilentScope}; chan=1) = write(instr, ":CHANNEL$chan:IMPEDANCE FIFTY")
+set_impedance_50ohm(instr::Instrument{<:AgilentScope}; chan=1) = write(instr, ":CHANNEL$chan:IMPEDANCE FIFTY")
 
 
 """
@@ -331,7 +331,7 @@ set_impedance_50ohm(instr::Instr{<:AgilentScope}; chan=1) = write(instr, ":CHANN
 - `"FIFT"`: 50Ω
 - `"ONEM"`: 1MΩ
 """
-get_impedance(instr::Instr{<:AgilentScope}; chan::Integer=1) = query(instr, ":CHANNEL$chan:IMPEDANCE?")
+get_impedance(instr::Instrument{<:AgilentScope}; chan::Integer=1) = query(instr, ":CHANNEL$chan:IMPEDANCE?")
 
 
 """
@@ -339,7 +339,7 @@ get_impedance(instr::Instr{<:AgilentScope}; chan::Integer=1) = query(instr, ":CH
 
 Run Oscilloscope
 """
-run(instr::Instr{<:AgilentScope}) = write(instr, "RUN")
+run(instr::Instrument{<:AgilentScope}) = write(instr, "RUN")
 
 
 """
@@ -347,11 +347,11 @@ run(instr::Instr{<:AgilentScope}) = write(instr, "RUN")
 
 Stop Oscilloscope
 """
-stop(instr::Instr{<:AgilentScope}) = write(instr, "STOP")
+stop(instr::Instrument{<:AgilentScope}) = write(instr, "STOP")
 
 
-get_waveform_preamble(instr::Instr{<:AgilentScope}) = query(instr, "WAVEFORM:PREAMBLE?")
-get_waveform_source(instr::Instr{<:AgilentScope}) = query(instr, "WAVEFORM:SOURCE?")
+get_waveform_preamble(instr::Instrument{<:AgilentScope}) = query(instr, "WAVEFORM:PREAMBLE?")
+get_waveform_source(instr::Instrument{<:AgilentScope}) = query(instr, "WAVEFORM:SOURCE?")
 
 """
     get_data_transfer_format(instr::Instr{<:AgilentScope})
@@ -364,7 +364,7 @@ Gets data transfer format
 # Returns
 - `String`: data transfer format
 """
-get_data_transfer_format(instr::Instr{<:AgilentScope}) = query(instr, "WAVEFORM:FORMAT?")
+get_data_transfer_format(instr::Instrument{<:AgilentScope}) = query(instr, "WAVEFORM:FORMAT?")
 
 """
     set_data_transfer_format_8bit(instr::Instr{<:AgilentScope})
@@ -374,7 +374,7 @@ Set data transfer format to 8bit
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-set_data_transfer_format_8bit(instr::Instr{<:AgilentScope}) = write(instr, "WAVEFORM:FORMAT BYTE")
+set_data_transfer_format_8bit(instr::Instrument{<:AgilentScope}) = write(instr, "WAVEFORM:FORMAT BYTE")
 
 """
 set_data_transfer_format_16bit(instr::Instr{<:AgilentScope})
@@ -384,9 +384,9 @@ Set data transfer format to 16bit
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-set_data_transfer_format_16bit(instr::Instr{<:AgilentScope}) = write(instr, "WAVEFORM:FORMAT WORD")
+set_data_transfer_format_16bit(instr::Instrument{<:AgilentScope}) = write(instr, "WAVEFORM:FORMAT WORD")
 
-get_waveform_num_points(instr::Instr{<:AgilentScope}) = query(instr, "WAVEFORM:POINTS?")
+get_waveform_num_points(instr::Instrument{<:AgilentScope}) = query(instr, "WAVEFORM:POINTS?")
 
 
 """
@@ -397,10 +397,10 @@ Sets the number of sample points in the voltage trace returned by the scope when
 # Arguments
 - `num_points::Integer`: number of sample points.
 """
-set_waveform_num_points(instr::Instr{<:AgilentScope}, num_points::Integer) = write(instr, "WAVEFORM:POINTS $num_points")
-set_waveform_num_points(instr::Instr{<:AgilentScope}, mode::String) = write(instr, "WAVEFORM:POINTS $mode") #<- I suspect this function is here by an error. TODO: test if this function works
+set_waveform_num_points(instr::Instrument{<:AgilentScope}, num_points::Integer) = write(instr, "WAVEFORM:POINTS $num_points")
+set_waveform_num_points(instr::Instrument{<:AgilentScope}, mode::String) = write(instr, "WAVEFORM:POINTS $mode") #<- I suspect this function is here by an error. TODO: test if this function works
 
-get_waveform_points_mode(instr::Instr{<:AgilentScope}) = query(instr, "WAVEFORM:POINTS:MODE?")
+get_waveform_points_mode(instr::Instrument{<:AgilentScope}) = query(instr, "WAVEFORM:POINTS:MODE?")
 
 """
     set_waveform_points_mode(scope, mode)
@@ -413,7 +413,7 @@ Inputs:
 - `:NORMAL`: transfer the measurement data
 - `:RAW`: transfer the raw acquisition data
 """
-function set_waveform_points_mode(instr::Instr{<:AgilentScope}, mode::Symbol)
+function set_waveform_points_mode(instr::Instrument{<:AgilentScope}, mode::Symbol)
     if mode ∈ [:NORMAL, :RAW]
         write(instr, "WAVEFORM:POINTS:MODE $(mode)")
     else
@@ -442,7 +442,7 @@ Inputs:
 
 Speed 6 corresponds to the Agilent scope normal setting when booting.
 """
-function set_speed_mode(instr::Instr{<:AgilentScope}, speed::Integer)
+function set_speed_mode(instr::Instrument{<:AgilentScope}, speed::Integer)
     if speed == 1
         set_data_transfer_format_16bit(instr)
         set_waveform_points_mode(instr, :RAW)
@@ -470,7 +470,7 @@ Gets acquisition type
 # Returns
 - `String`: acquisition type
 """
-function get_acquisition_type(scope::Instr{<:AgilentScope})
+function get_acquisition_type(scope::Instrument{<:AgilentScope})
     return query(scope, "ACQUIRE:TYPE?")
 end
 
@@ -485,11 +485,11 @@ Sets acquisition type to either normal, average, high_res, or peak.
 - `type::Symbol`: The acquisition type. Must be either `:normal`, `:average`, `:high_res`,
                   or `peak`.
 """
-set_acquisition_type(scope::Instr{<:AgilentScope}, type::Symbol) = set_acquisition_type(scope, Val(type))
-set_acquisition_type(scope::Instr{<:AgilentScope}, ::Val{:normal}) = write(scope, "ACQUIRE:TYPE NORM")
-set_acquisition_type(scope::Instr{<:AgilentScope}, ::Val{:average}) = write(scope, "ACQUIRE:TYPE AVER")
-set_acquisition_type(scope::Instr{<:AgilentScope}, ::Val{:high_res}) = write(scope, "ACQUIRE:TYPE HRES")
-set_acquisition_type(scope::Instr{<:AgilentScope}, ::Val{:peak}) = write(scope, "ACQUIRE:TYPE PEAK")
+set_acquisition_type(scope::Instrument{<:AgilentScope}, type::Symbol) = set_acquisition_type(scope, Val(type))
+set_acquisition_type(scope::Instrument{<:AgilentScope}, ::Val{:normal}) = write(scope, "ACQUIRE:TYPE NORM")
+set_acquisition_type(scope::Instrument{<:AgilentScope}, ::Val{:average}) = write(scope, "ACQUIRE:TYPE AVER")
+set_acquisition_type(scope::Instrument{<:AgilentScope}, ::Val{:high_res}) = write(scope, "ACQUIRE:TYPE HRES")
+set_acquisition_type(scope::Instrument{<:AgilentScope}, ::Val{:peak}) = write(scope, "ACQUIRE:TYPE PEAK")
 
 """
     set_acquisition_type_normal(scope::Instr{<:AgilentScope})
@@ -499,7 +499,7 @@ Set acquisition type to normal
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-function set_acquisition_type_normal(scope::Instr{<:AgilentScope})
+function set_acquisition_type_normal(scope::Instrument{<:AgilentScope})
     @warn "set_acquisition_type_normal() will be removed in release v0.13.0. Use set_acquisition_type(scope, :normal) instead"
     set_acquisition_type(scope, :normal)
     return nothing
@@ -513,7 +513,7 @@ Set acquisition type to average
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-function set_acquisition_type_average(scope::Instr{<:AgilentScope})
+function set_acquisition_type_average(scope::Instrument{<:AgilentScope})
     @warn "set_acquisition_type_average() will be removed in release v0.13.0. Use set_acquisition_type(scope, :average) instead"
     set_acquisition_type(scope, :average)
     return nothing
@@ -527,7 +527,7 @@ Set acquisition type to high res
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-function set_acquisition_type_high_res(scope::Instr{<:AgilentScope})
+function set_acquisition_type_high_res(scope::Instrument{<:AgilentScope})
     @warn "set_acquisition_type_high_res() will be removed in release v0.13.0. Use set_acquisition_type(scope, :high_res) instead"
     set_acquisition_type(scope, :high_res)
     return nothing
@@ -541,7 +541,7 @@ Set acquisition type to type peak
 # Arguments
 - `instr::Instr{<:AgilentScope}`: AgilentScope
 """
-function set_acquisition_type_peak(scope::Instr{<:AgilentScope})
+function set_acquisition_type_peak(scope::Instrument{<:AgilentScope})
     @warn "set_acquisition_type_peak() will be removed in release v0.13.0. Use set_acquisition_type(scope, :peak) instead"
     set_acquisition_type(scope, :peak)
     return nothing

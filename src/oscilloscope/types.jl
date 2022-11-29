@@ -4,7 +4,7 @@ Supported Instruments:
   - [`AgilentDSOX4024A`](@ref)
   - [`AgilentDSOX4034A`](@ref)
 """
-abstract type Oscilloscope <: Instrument end
+abstract type Oscilloscope <: AbstractInstrument end
 
 
 """

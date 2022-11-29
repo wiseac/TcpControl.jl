@@ -3,7 +3,7 @@ Supported Instruments:
 
   - [`Keysight33612A`](@ref)
 """
-abstract type WaveformGenerator <: Instrument end
+abstract type WaveformGenerator <: AbstractInstrument end
 
 
 """

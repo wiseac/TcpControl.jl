@@ -3,7 +3,7 @@ Supported Instruments:
 
   - [`AgilentB2910BL`](@ref)
 """
-abstract type SourceMeasureUnit <: Instrument end
+abstract type SourceMeasureUnit <: AbstractInstrument end
 
 
 """

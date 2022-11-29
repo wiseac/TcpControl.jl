@@ -3,7 +3,7 @@ Supported Instruments:
 
   - [`KeysightDMM34465A`](@ref)
 """
-abstract type Multimeter <: Instrument end
+abstract type Multimeter <: AbstractInstrument end
 
 """
 Supported models

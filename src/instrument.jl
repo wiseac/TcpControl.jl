@@ -19,10 +19,10 @@ help?> initialize
 Use the help feature for documentation of each of the instrument groups for more detail.
 
 """
-abstract type Instrument end
+abstract type AbstractInstrument end
 
 
-mutable struct Instr{ T <: Instrument } <: Instrument
+mutable struct Instrument{ T <: AbstractInstrument } <: AbstractInstrument
     model::Union{Type, T}
     address::String
     sock::TCPSocket
@@ -30,10 +30,10 @@ mutable struct Instr{ T <: Instrument } <: Instrument
 end
 
 function CreateTcpInstr(model, address)
-    Instr{model}(model, address, TCPSocket(), false)
+    Instrument{model}(model, address, TCPSocket(), false)
 end
 
-function Base.show(io::IO, ::MIME"text/plain", i::TcpInstruments.Instr)
+function Base.show(io::IO, ::MIME"text/plain", i::TcpInstruments.Instrument)
     model = i.model isa DataType ? i.model : typeof(i.model)
     println("TcpInstruments.Instr{$(i.model)}")
     println("    Group: $(supertype(model))")
@@ -62,7 +62,7 @@ Initializes a connection to the instrument at the given (input) IP address.
 # Throws
 - 'Instrument was not found in your .tcp_instruments.yml file' if the specified model is not listed
 """
-function initialize(model::Type{<:Instrument}, address; GPIB_ID=-1)
+function initialize(model::Type{<:AbstractInstrument}, address; GPIB_ID=-1)
     instr_h = CreateTcpInstr(model, address)
     connect!(instr_h)
     remote_mode(instr_h)
@@ -72,7 +72,7 @@ function initialize(model::Type{<:Instrument}, address; GPIB_ID=-1)
     return instr_h
 end
 
-function initialize(model::Type{<:Instrument})
+function initialize(model::Type{<:AbstractInstrument})
     data = nothing
     try
         data = get_config()[string(model)]
@@ -114,7 +114,7 @@ Closes the TCP connection.
 # Arguments
 - `instr::Instrument`: The device to close the TCP connection
 """
-function terminate(instr::Instrument)
+function terminate(instr::AbstractInstrument)
     close!(instr)
     local_mode(instr)
 end
@@ -181,7 +181,7 @@ Connects to the specified instrument via instrument IP addres
 # Throws
 - `Cannot connect. Instrument is already connected!`: if instruemnt is already connected
 """
-function connect!(instr::Instrument)
+function connect!(instr::AbstractInstrument)
     instr.connected && error("Cannot connect. Instrument is already connected!")
 	SCPI_port = 5025
 	host,port = split_str_into_host_and_port(instr.address)
@@ -201,7 +201,7 @@ Disconnects to the specified instrument and updates instrument connect status
 # Throws
 - `Cannot disconnect. Instrument is not connected!`: if instrument is already connected
 """
-function close!(instr::Instrument)::Bool
+function close!(instr::AbstractInstrument)::Bool
     !instr.connected && error("Cannot disconnect. Instrument is not connected!")
 	close(instr.sock)
 	instr.connected = false
@@ -219,12 +219,12 @@ Disconnects to the specified instrument and updates instrument connect status
 # Throws
 - `Instrument is not connected, cannot write to it!`: if instrument is not connected
 """
-function write(instr::Instrument, message::AbstractString)
+function write(instr::AbstractInstrument, message::AbstractString)
     !instr.connected && error("Instrument is not connected, cannot write to it!")
 	println(instr.sock, message)
 end
 
-function read(instr::Instrument)
+function read(instr::AbstractInstrument)
     !instr.connected && error("Instrument is not connected, cannot read from it!")
 	return rstrip(readline(instr.sock), ['\r', '\n'])
 end
@@ -253,7 +253,7 @@ error will be thrown.
 # Throws
 - `Query timed out`: No output from device is receieved within timeout
 """
-function query(instr::Instrument, message::AbstractString; timeout=2.8)
+function query(instr::AbstractInstrument, message::AbstractString; timeout=2.8)
     write(instr, message)
     return timeout == 0 ? read(instr) : read_with_timeout(instr, timeout)
 end
@@ -279,7 +279,7 @@ error will be thrown.
 # Returns
 - `Float64`: Output from device after message is sent
 """
-f_query(instr::Instrument, message; timeout=0.5) = parse(Float64, query(instr, message; timeout=timeout))
+f_query(instr::AbstractInstrument, message; timeout=0.5) = parse(Float64, query(instr, message; timeout=timeout))
 
 """
     i_query(instr::Instrument, message; timeout=0.5)
@@ -302,7 +302,7 @@ error will be thrown.
 # Returns
 - `Int64`: Output from device after message is sent
 """
-i_query(instr::Instrument, message; timeout=0.5) = parse(Int64, query(instr, message; timeout=timeout))
+i_query(instr::AbstractInstrument, message; timeout=0.5) = parse(Int64, query(instr, message; timeout=timeout))
 
 
 """
@@ -313,13 +313,13 @@ Remove any unread data from the instrument buffer
 # Arguments
 - `instr::Instrument`: Instrument to have unread data cleared from buffer
 """
-function clear_buffer(instr::Instrument)
+function clear_buffer(instr::AbstractInstrument)
     while !isnothing(read_with_timeout(instr, 0.5))
     end
     return nothing
 end
 
-function read_with_timeout(instr::Instrument, timeout_sec=2.8)
+function read_with_timeout(instr::AbstractInstrument, timeout_sec=2.8)
     ch = Channel(1)
     task = @async begin
         reader_task = current_task()

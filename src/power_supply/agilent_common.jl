@@ -23,7 +23,7 @@ Supported Instruments:
 Returns:
   Nothing
 """
-set_channel(obj::Instr{<:AgilentPowerSupply}, chan) = write(obj, "INST:NSEL $chan")
+set_channel(obj::Instrument{<:AgilentPowerSupply}, chan) = write(obj, "INST:NSEL $chan")
 
 """
     get_channel(obj::Instr{<:AgilentPowerSupply}; v=false)
@@ -51,7 +51,7 @@ Returns:
     - {"1"|"2"|...}
     - when v == true: "P6V", .. etc
 """
-get_channel(obj::Instr{<:AgilentPowerSupply}; v=false) = v ? query(obj, "INST:SEL?") : strip(query(obj, "INST:NSEL?"), '+')
+get_channel(obj::Instrument{<:AgilentPowerSupply}; v=false) = v ? query(obj, "INST:SEL?") : strip(query(obj, "INST:NSEL?"), '+')
 
 
 function psu_chan(obj, num, cmd; float=false)
@@ -87,7 +87,7 @@ subsequently will enable that channel
 # Arguments
   - `obj::Instr{<:AgilentPowerSupply}`: power supply instrument
 """
-enable_output(obj::Instr{<:AgilentPowerSupply}) = write(obj, ":OUTPUT:STATe ON")
+enable_output(obj::Instrument{<:AgilentPowerSupply}) = write(obj, ":OUTPUT:STATe ON")
 
 """
     disable_output(obj::Instr{<:AgilentPowerSupply})
@@ -105,7 +105,7 @@ subsequently will disable that channel
 # Arguments
   - `obj::Instr{<:AgilentPowerSupply}`: power supply instrument
 """
-disable_output(obj::Instr{<:AgilentPowerSupply}) = write(obj, ":OUTPUT:STATE OFF")
+disable_output(obj::Instrument{<:AgilentPowerSupply}) = write(obj, ":OUTPUT:STATE OFF")
 
 
 """
@@ -127,7 +127,7 @@ subsequently will disable that channel
 # Returns:
   - `String`: {"OFF"|"ON"}
 """
-function get_output_status(obj::Instr{<:AgilentPowerSupply})
+function get_output_status(obj::Instrument{<:AgilentPowerSupply})
     output = query(obj, ":OUTPUT:STATE?")
     if output == "0"
         return "OFF"
@@ -149,10 +149,10 @@ This will change the voltage output voltage of a device.
 
 # Keywords
 - `chan=0`: If not provided it will use the default channel (see `set_channel`)
-  Otherwise this can be a string or int: 1, 2, 3 .. to n 
+  Otherwise this can be a string or int: 1, 2, 3 .. to n
   where n is the total number of channels
 """
-set_voltage(obj::Instr{<:AgilentPowerSupply}, num::Voltage; chan=0) = psu_chan(obj, chan, "SOURCE:VOLTAGE $(raw(num))")
+set_voltage(obj::Instrument{<:AgilentPowerSupply}, num::Voltage; chan=0) = psu_chan(obj, chan, "SOURCE:VOLTAGE $(raw(num))")
 
 """
     get_voltage(obj::Instr{<:AgilentPowerSupply}; chan=0)
@@ -164,13 +164,13 @@ This will return the voltage of a device's channel.
 
 # Keywords
 - `chan=0`: If not provided it will use the default channel (see `set_channel`)
-  Otherwise this can be a string or int: 1, 2, 3 .. to n 
+  Otherwise this can be a string or int: 1, 2, 3 .. to n
   where n is the total number of channels
 
-# Returns: 
+# Returns:
 - Voltage
 """
-get_voltage(obj::Instr{<:AgilentPowerSupply}; chan=0) = psu_chan(obj, chan, "SOURCE:VOLTAGE?"; float=true) * V
+get_voltage(obj::Instrument{<:AgilentPowerSupply}; chan=0) = psu_chan(obj, chan, "SOURCE:VOLTAGE?"; float=true) * V
 
 """
     set_current_limit(obj::Instr{<:AgilentPowerSupply}, num::Current; chan=0)
@@ -187,7 +187,7 @@ channel
   Otherwise this can be a string or int: 1, 2, 3 .. to n
   where n is the total number of channels
 """
-set_current_limit(obj::Instr{<:AgilentPowerSupply}, num::Current; chan=0) = psu_chan(obj, chan, "SOURCE:CURRENT $(raw(num))")
+set_current_limit(obj::Instrument{<:AgilentPowerSupply}, num::Current; chan=0) = psu_chan(obj, chan, "SOURCE:CURRENT $(raw(num))")
 
 """
     get_current_limit(obj::Instr{<:AgilentPowerSupply}; chan=0)
@@ -205,4 +205,4 @@ This will return the current limit of a device.
 # Returns
 - `Current Limit`
 """
-get_current_limit(obj::Instr{<:AgilentPowerSupply}; chan=0) = psu_chan(obj, chan, "SOURCE:CURRENT?"; float=false) * A
+get_current_limit(obj::Instrument{<:AgilentPowerSupply}; chan=0) = psu_chan(obj, chan, "SOURCE:CURRENT?"; float=false) * A
