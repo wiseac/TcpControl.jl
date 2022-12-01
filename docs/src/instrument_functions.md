@@ -47,6 +47,12 @@ Modules = [TcpInstruments]
 Filter = t -> typeof(t) === DataType && t <: Oscilloscope && t != Oscilloscope
 ```
 
+## SourceMeasureUnit
+```@autodocs
+Modules = [TcpInstruments]
+Filter = t -> typeof(t) === DataType && t <: SourceMeasureUnit && t != SourceMeasureUnit
+```
+
 ### Agilent Oscilloscope
 ```@autodocs
 Modules = [TcpInstruments]

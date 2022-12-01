@@ -10,7 +10,8 @@ SCPI is supported on almost all modern pieces of lab equipment and this code has
 - Power supply Agilent E36312A
 - HV power supply SRS PS310 via Prologix GPIB to Ethernet adaptor
 - Power supply Versatile Power 100-10 XR
-- Impedance analyser Agilent 4294A
+- Impedance analyzer Agilent 4294A
+- SourceMeasureUnit Agilent B2910BL
 
 ## Installation
 TcpInstruments can be installed using the Julia package manager. From the Julia REPL, type ] to enter the Pkg REPL mode and run
