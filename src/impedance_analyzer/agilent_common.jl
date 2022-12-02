@@ -45,7 +45,7 @@ Get the number of sweep averages being used
 function get_num_averages(ia::Instrument{<:AgilentImpedAnalyzer})
     if is_average_mode_on(ia)
         write(ia, "AVERFACT?")
-        num_averages = parse(Float64, read(ia))
+        num_averages = parse(Float64, read_with_timeout(ia))
     else
         num_averages = 1
     end
@@ -66,7 +66,7 @@ Get status for whether average mode is on
 """
 function is_average_mode_on(ia::Instrument{<:AgilentImpedAnalyzer})
     write(ia, "AVER?")
-    return parse(Bool, read(ia))
+    return parse(Bool, read_with_timeout(ia))
 end
 
 
@@ -77,7 +77,7 @@ Output is in [s]
 """
 function get_point_delay_time(ia::Instrument{<:AgilentImpedAnalyzer})
     write(ia, "PDELT?")
-    point_delay_time = parse(Float64, read(ia)) * u"s"
+    point_delay_time = parse(Float64, read_with_timeout(ia)) * u"s"
     return point_delay_time
 end
 
@@ -95,7 +95,7 @@ Get time delay value used between sweep acquisitions
 """
 function get_sweep_delay_time(ia::Instrument{<:AgilentImpedAnalyzer})
     write(ia, "SDELT?")
-    sweep_delay_time = parse(Float64, read(ia)) * u"s"
+    sweep_delay_time = parse(Float64, read_with_timeout(ia)) * u"s"
     return sweep_delay_time
 end
 
@@ -115,7 +115,7 @@ Output is ["UP", "DOWN"]
 """
 function get_sweep_direction(ia::Instrument{<:AgilentImpedAnalyzer})
     write(ia, "SWED?")
-    sweep_direction = read(ia)
+    sweep_direction = read_with_timeout(ia)
     return sweep_direction
 end
 
@@ -160,13 +160,13 @@ end
 
 function get_frequency_lower_bound(ia::Instrument{<:AgilentImpedAnalyzer})
     write(ia, "STAR?")
-    lower_bound = parse(Float64, read(ia)) * u"Hz"
+    lower_bound = parse(Float64, read_with_timeout(ia)) * u"Hz"
     return uconvert(u"MHz", lower_bound)
 end
 
 function get_frequency_upper_bound(ia::Instrument{<:AgilentImpedAnalyzer})
     write(ia, "STOP?")
-    upper_bound = parse(Float64, read(ia)) * u"Hz"
+    upper_bound = parse(Float64, read_with_timeout(ia)) * u"Hz"
     return uconvert(u"MHz", upper_bound)
 end
 
@@ -227,7 +227,7 @@ Gets the set number of data points
 """
 function get_num_data_points(ia::Instrument{<:AgilentImpedAnalyzer})
     write(ia, "POIN?")
-    num_data_points = parse(Int64, read(ia))
+    num_data_points = parse(Int64, read_with_timeout(ia))
     return num_data_points
 end
 
@@ -245,7 +245,7 @@ Gets DC voltage
 """
 function get_volt_dc(ia::Instrument{<:AgilentImpedAnalyzer})
     write(ia, "DCV?")
-    volt_dc = parse(Float64, read(ia)) * u"V"
+    volt_dc = parse(Float64, read_with_timeout(ia)) * u"V"
     return volt_dc
 end
 

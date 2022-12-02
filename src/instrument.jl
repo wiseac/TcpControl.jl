@@ -319,7 +319,8 @@ function clear_buffer(instr::AbstractInstrument)
     return nothing
 end
 
-function read_with_timeout(instr::AbstractInstrument, timeout_sec=2.8)
+
+function read_with_timeout(instr::AbstractInstrument, timeout_sec=10.0)
     ch = Channel(1)
     task = @async begin
         reader_task = current_task()

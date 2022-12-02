@@ -45,7 +45,7 @@ Returns oscillator (ac) voltage
 """
 function get_volt_ac(ia::Instrument{Agilent4294A})
     write(ia, "POWE?")
-    volt_ac = parse(Float64, read(ia)) * u"V"
+    volt_ac = parse(Float64, read_with_timeout(ia)) * u"V"
     return volt_ac
 end
 
@@ -101,7 +101,7 @@ end
 # this function is blocking (lightly tested only)
 function get_acquisition_status(ia::Instrument{Agilent4294A})
     write(ia, "*OPC?")
-    output = read(ia)
+    output = read_with_timeout(ia)
     return parse(Bool, output)
 end
 
@@ -188,7 +188,7 @@ function read_float32(ia::Instrument{Agilent4294A})
     get_data_header(ia)
     data = ntoh.(reinterpret(Float32, read_num_bytes(ia, num_data_bytes)))
     # read end of line character
-    read(ia)
+    read_with_timeout(ia)
 
     num_values = num_data_points * num_values_per_point
     if length(data) != num_values

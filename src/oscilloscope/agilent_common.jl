@@ -164,8 +164,9 @@ function read_num_bytes(scope::Instrument{<:AgilentScope}, num_bytes)
 end
 
 
+
 function read_end_of_line_character(scope::Instrument{<:AgilentScope})
-    read(scope)
+    read_with_timeout(scope)
     return nothing
 end
 
