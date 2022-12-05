@@ -2,10 +2,14 @@ using Documenter
 using TcpInstruments
 
 
-makedocs(
-    sitename = "TcpInstruments",
-    format = Documenter.HTML(
-        prettyurls = get(ENV, "CI", nothing) == "true"
+makedocs(;
+    modules = [TcpInstruments],
+    repo="https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl/blob/{commit}{path}#{line}",
+    sitename = "TcpInstruments.jl",
+    format = Documenter.HTML(;
+        prettyurls = get(ENV, "CI", nothing) == "true",
+        canonical="https://Orchard-Ultrasound-Innovation.github.io/TcpInstruments.jl",
+        assets=String[],
     ),
     pages = [
         "Home" => "index.md",
@@ -15,7 +19,6 @@ makedocs(
             "Instrument-specific Functions" => "instrument_functions.md",
         ]
     ],
-    modules = [TcpInstruments]
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.
@@ -23,6 +26,5 @@ makedocs(
 # for more information.
 deploydocs(
     repo = "github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl.git",
-    branch = "gh-pages",
-    target = "build",
+    devbranch="main",
 )
