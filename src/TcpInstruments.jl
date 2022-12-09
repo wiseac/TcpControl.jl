@@ -178,6 +178,7 @@ include("waveform_generator/all.jl")
 include("impedance_analyzer/all.jl")
 include("multimeter/all.jl")
 include("source_measure_unit/all.jl")
+include("source_measure_unit/recipes.jl")
 
 include("emulator/emulator.jl")
 end #endmodule
