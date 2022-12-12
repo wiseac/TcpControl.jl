@@ -92,33 +92,22 @@ struct ScopeInfo
     channel::Int64
 end
 
-function Base.show(io::IO, info::ScopeInfo)
-    println(io, " ScopeInfo: ")
-    if get(io, :compact, false)
-        show_core_fields(io, info)
-    else
-        show_core_fields(io, info)
-        show_additional_fields(io, info)
-    end
-end
-
-function show_core_fields(io::IO, info::ScopeInfo)
-    println(io, "        channel: ", info.channel)
-    println(io, "         format: ", info.format)
-    println(io, "       acq_type: ", info.type)
-    println(io, "     num_points: ", info.num_points)
-    println(io, "      impedance: ", info.impedance)
-    println(io, "       coupling: ", info.coupling)
-    println(io, "low_pass_filter: ", info.low_pass_filter)
-end
-
-function show_additional_fields(io::IO, info::ScopeInfo)
-    println(io, "    x_reference: ", info.x_reference)
-    println(io, "       x_origin: ", info.x_origin)
-    println(io, "    x_increment: ", info.x_increment)
-    println(io, "    y_reference: ", info.y_reference)
-    println(io, "       y_origin: ", info.y_origin)
-    println(io, "    y_increment: ", info.y_increment)
+function show(io::IO, x::ScopeInfo)
+    println(io, "(ScopeInfo:")
+    println(io, "          .format:  \"$(x.format)\"")
+    println(io, "            .type:  \"$(x.type)\"")
+    println(io, "      .num_points:  $(x.num_points)")
+    println(io, "     .x_increment:  $(x.x_increment)")
+    println(io, "        .x_origin:  $(x.x_origin)")
+    println(io, "     .x_reference:  $(x.x_reference)")
+    println(io, "     .y_increment:  $(x.y_increment)")
+    println(io, "        .y_origin:  $(x.y_origin)")
+    println(io, "     .y_reference:  $(x.y_reference)")
+    println(io, "       .impedance:  \"$(x.impedance)\"")
+    println(io, "        .coupling:  \"$(x.coupling)\"")
+    println(io, " .low_pass_filter:  \"$(x.low_pass_filter)\"")
+    println(io, "         .channel:  $(x.channel)")
+    println(io, ")")
 end
 
 
@@ -128,24 +117,32 @@ struct ScopeData
     time::Vector{typeof(1.0u"s")}
 end
 
-function Base.show(io::IO, ::MIME"text/plain", data_array::AbstractArray{ScopeData})
-    for idx in eachindex(data_array)
-        data = data_array[idx]
-        println(io, "Channel #", data.info.channel)
-        show(IOContext(io, :compact=>true), data)
-        println(io, "-------------------------")
+function show(io::IO, x::ScopeData)
+    println(io, "ScopeData has three fields: .info, .volt, and .time.")
+    if isnothing(x.info)
+        println(io, "ScopeData.info: nothing")
+    else
+        println(io, "ScopeData.info contains:")
+        Base.show(io, x.info)
     end
-end
 
-function Base.show(io::IO, data::ScopeData)
-    println(io, "ScopeData:")
-    show_volt_and_time(io, data)
-    show(IOContext(io, :compact=>true), data.info)
-    return nothing
-end
+    seconds = new_autoscale_unit(x.time)
+    volt    = new_autoscale_unit(x.volt)
 
-function show_volt_and_time(io::IO, data::ScopeData)
-    println(io, "          volt: ", size(data.volt), " ", unit(data.volt[1]))
-    println(io, "          time: ", size(data.time), " ", unit(data.time[1]))
-    return nothing
+    time_unit = unit(seconds[1])
+    volt_unit = unit(volt[1])
+    seconds = raw.(seconds)
+    volt    = raw.(volt)
+
+    println(io, "\nPlot of ScopeData.volt vs ScopeData.time:")
+    plt = UnicodePlots.lineplot(seconds, volt;
+        title = "Voltage Trace",
+        name="Channel $(x.info.channel)",
+        width = 70,
+        height= 25,
+        margin= 1,
+        xlabel="Time / $(time_unit)",
+        ylabel="Volt / $(volt_unit)")
+    show(io, plt)
+    println("")
 end

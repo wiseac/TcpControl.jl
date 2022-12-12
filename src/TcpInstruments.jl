@@ -40,10 +40,12 @@ To see the different types of devices you can interface with
 use `help?> Instrument`.
 """
 module TcpInstruments
-
+import Base.show
+import UnicodePlots
 using Sockets
 using Base.Threads: @spawn
 using Dates
+using OffsetArrays
 using MAT
 using JLD2
 using RecipesBase

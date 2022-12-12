@@ -269,30 +269,85 @@ function split_str_into_host_and_port(str::AbstractString)
     return (host, port)
 end
 
-
-function autoscale_seconds(time_data)
-    unit = "seconds"
-    time_array = time_data
-    m = abs(min(time_data...))
-    m = ustrip(m)
-
-    if m >= 1
-    elseif 1 > m && m >= 1e-3
-        unit = "ms" # miliseconds
-        time_array = ms.(time_data)
-    elseif 1e-3 > m && m >= 1e-6
-        unit = "μs" # microseconds
-        time_array = μs.(time_data)
-    elseif 1e-6 > m && m >= 1e-9
-        unit = "ns" # nanoseconds
-        time_array = ns.(time_data)
-    else
-        unit = "ps" # picoseconds
-        time_array = ps.(time_data)
-    end
-    return unit, time_array
+function autoscale_seconds(seconds)
+    max_val = maximum(abs.(seconds))
+    _, unit = convert_to_best_prefix(max_val; base_unit = "s")
+    power_of_1000, _, factor = get_power_of_1000(max_val; max_power = 0)
+    factor = 1000.0^power_of_1000
+    seconds_scaled = seconds .* factor
+    return seconds_scaled, unit
 end
 
+function new_autoscale_unit(value_in::Vector{<:Unitful.AbstractQuantity})
+    max_val = maximum(abs.(value_in))
+    scaled_value = convert_to_best_prefix(max_val)
+    best_unit = unit(scaled_value)
+    scaled_values  = uconvert.(best_unit, value_in)
+    return scaled_values
+end
+
+"""
+    convert_to_best_prefix(input_value; base_unit::String = "", max_power = 3)
+
+# Inputs
+- base_unit: Usually "v", "s", or "m"
+- max_power: is the maximum power of 1000 to convert to. Valid values: -4:3
+
+# Examples
+- convert_to_best_prefix(1.7e5; base_unit = "V")
+- convert_to_best_prefix(1.7e5; base_unit = "s", max_power=0)
+"""
+function convert_to_best_prefix(input_value; base_unit::String, max_power_of_1000 = 3)
+    if input_value == 0 || input_value == 1000
+        factor = 1
+        value = input_value
+        unit = base_unit
+    else
+        power_of_1000, unit_prefix, factor = get_power_of_1000(input_value; max_power=max_power_of_1000)
+        value = input_value * factor
+        unit = unit_prefix * base_unit
+    end
+    return value, unit
+end
+
+"""
+    convert_to_best_prefix(input_value::Unitful.AbstractQuantity; max_power = 3)
+
+# Inputs
+- max_power: is the maximum power of 1000 to convert to. Valid values: -4:3
+
+# Examples
+- convert_to_best_prefix(1.7e5u"V")
+- convert_to_best_prefix(1.7e5u"s", max_power=0)
+"""
+function convert_to_best_prefix(input_value::Unitful.AbstractQuantity)
+    if ustrip(input_value) == 0 || ustrip(input_value) == 1000
+        scaled_value = input_value
+    else
+        isa(input_value, Unitful.Time) ? max_power = 0 : max_power = 3
+        _, unit_prefix = get_power_of_1000(ustrip(input_value); max_power=max_power)
+        prefixed_unit = uparse(unit_prefix * string(unit(input_value)))
+        scaled_value  = uconvert(prefixed_unit, input_value)
+    end
+    return scaled_value
+end
+
+function get_power_of_1000(input_value; max_power = 3)
+    if input_value == 0 || input_value == 1000
+        power_of_1000 = 0;
+        unit_prefix = "";
+        error("Invalid Input")
+    else
+        array_indices = -4:3
+        min_power = minimum(array_indices)
+        prefixes = OffsetArrays.OffsetArray(["p", "n", "µ", "m", "", "k", "M", "G"], array_indices)
+        power_of_1000 = Int(floor(log(1000, abs(input_value))))
+        power_of_1000 = clamp(power_of_1000, min_power, max_power)
+        unit_prefix = prefixes[power_of_1000]
+        factor = 1000.0^(-power_of_1000)
+    end
+    return power_of_1000, unit_prefix, factor
+end
 
 function fake_signal(n)
     fs = 2.0e9;

@@ -9,6 +9,18 @@ using Unitful
 const A = u"A"
 
 @testset ExtendedTestSet "TcpInstruments" begin
+
+    function expected_number_and_unit(function_name, base_unit, val, true_val_scaled, true_unit; max_power = 3)
+        scaled_val, unit = function_name(val; base_unit = base_unit, max_power = max_power)
+        same = (scaled_val ≈ true_val_scaled)
+        same && (same = unit == true_unit)
+        if !same
+            @info "value"   true_val_scaled, scaled_val, isapprox(scaled_val, true_val_scaled)
+            @info "scaled"        true_unit,       unit, true_unit == unit
+        end
+        return same
+    end
+
     @testset "Fake Scope" begin
         f = initialize(TcpInstruments.FakeDSOX4034A)
 
@@ -41,28 +53,31 @@ const A = u"A"
             rm(save_filename * ".mat")
         end
 
-        @testset "Save multi ch data" begin
-            data = get_data(f, [1,2,3,4])
-            @test length(data) == 4
-            
-            save_filename = "./multi_ch_scope_data"
-            save(data, filename=save_filename, format=:matlab)
-            
-            data_loaded = load(save_filename * ".mat")
-            for idx = 1:length(data)
-                pre_save_data = data[idx]
-                post_save_data = data_loaded["channel_$(idx)"]
-                for key in keys(post_save_data["info"])
-                    @test post_save_data["info"][key] == getproperty(pre_save_data.info, Symbol(key))
+        @testset "FakeDevice" begin
+        # include("./emulate/test_fake_device.jl")
+            @testset "Save multi ch data" begin
+                data = get_data(f, [1,2,3,4])
+                @test length(data) == 4
+                
+                save_filename = "./multi_ch_scope_data"
+                save(data, filename=save_filename, format=:matlab)
+                
+                data_loaded = load(save_filename * ".mat")
+                for idx = 1:length(data)
+                    pre_save_data = data[idx]
+                    post_save_data = data_loaded["channel_$(idx)"]
+                    for key in keys(post_save_data["info"])
+                        @test post_save_data["info"][key] == getproperty(pre_save_data.info, Symbol(key))
+                    end
+                    @test post_save_data["time"] == ustrip.(pre_save_data.time)
+                    @test post_save_data["volt"] == ustrip.(pre_save_data.volt)
+                    @test string(post_save_data["time_unit"]) == string(unit(pre_save_data.time[1]))
+                    @test string(post_save_data["volt_unit"]) == string(unit(pre_save_data.volt[1]))
                 end
-                @test post_save_data["time"] == ustrip.(pre_save_data.time)
-                @test post_save_data["volt"] == ustrip.(pre_save_data.volt)
-                @test string(post_save_data["time_unit"]) == string(unit(pre_save_data.time[1]))
-                @test string(post_save_data["volt_unit"]) == string(unit(pre_save_data.volt[1]))
+                rm(save_filename * ".mat")
+                end
             end
-            rm(save_filename * ".mat")
         end
-    end
 
     @testset "Util Functions" begin
         @testset "split_str_into_host_and_port" begin
@@ -103,6 +118,26 @@ const A = u"A"
             data_loaded_3 = load(filename_3 * ".mat")
             @test data_loaded_3["data"] == val
             rm(filename_3 * ".mat")
+        end
+
+        @testset "show(ScopeData)" begin
+            using TcpInstruments: ScopeInfo, ScopeData
+            si = ScopeInfo("8bit", "Normal", 1000, 1/1e3, -5e-4, 0, 1, 0, 0, "50 Ω", "DC", "off", 2)
+            amplitude = 100u"mV"
+            volts = amplitude* TcpInstruments.fake_signal(si.num_points)
+            mytime = u"s"*((( collect(0:(si.num_points-1))  .- si.x_reference) .* si.x_increment) .+ si.x_origin)
+            sd = ScopeData(si, volts, mytime)
+            println("")
+            show(sd)
+        end
+        
+        @testset "new_autoscale_unit" begin
+            using TcpInstruments: new_autoscale_unit
+            no_unit = rand(100)
+            before = 2001u"V"*no_unit
+            true_scale = 2.001u"kV"*no_unit
+            after = new_autoscale_unit(before)
+            @test after ≈ true_scale
         end
     end
 end
