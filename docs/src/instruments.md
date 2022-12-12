@@ -7,15 +7,16 @@ A list of all currently supported instruments:
 - [`ImpedanceAnalyzer`](@ref)
 - [`Multimeter`](@ref)
 - [`Oscilloscope`](@ref)
-- [`SourceMeasureUnit`](@ref)
 - [`PowerSupply`](@ref)
 - [`WaveformGenerator`](@ref)
+- [`SourceMeasureUnit`](@ref)
+
 
 ```@docs
 ImpedanceAnalyzer
 Multimeter
 Oscilloscope
-SourceMeasureUnit
 PowerSupply
 WaveformGenerator
+SourceMeasureUnit
 ```

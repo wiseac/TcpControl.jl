@@ -47,11 +47,6 @@ Modules = [TcpInstruments]
 Filter = t -> typeof(t) === DataType && t <: Oscilloscope && t != Oscilloscope
 ```
 
-## SourceMeasureUnit
-```@autodocs
-Modules = [TcpInstruments]
-Filter = t -> typeof(t) === DataType && t <: SourceMeasureUnit && t != SourceMeasureUnit
-```
 
 ### Agilent Oscilloscope
 ```@autodocs
@@ -114,4 +109,17 @@ Filter = t -> typeof(t) === DataType && t <: WaveformGenerator && t != WaveformG
 Modules = [TcpInstruments]
 Filter = t -> typeof(t) !== DataType
 Pages = ["src/waveform_generator/keysight_common.jl"]
+```
+
+## SourceMeasureUnit
+```@autodocs
+Modules = [TcpInstruments]
+Filter = t -> typeof(t) === DataType && t <: SourceMeasureUnit && t != SourceMeasureUnit
+```
+
+### Agilent SourceMeasureUnit
+```@autodocs
+Modules = [TcpInstruments]
+Filter = t -> typeof(t) !== DataType
+Pages = ["src/source_measure_unit/agilent_common.jl"]
 ```
