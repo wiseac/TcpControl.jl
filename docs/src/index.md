@@ -169,9 +169,9 @@ enable_output(sg)             # sine output starts here
 ```
 
 
-## Power Supplies
+### Power Supplies
 
-### VersatilePower
+#### VersatilePower
  
 ```julia
 # Initialize automatically puts this power supply in remote mode
@@ -186,7 +186,7 @@ enable_output(pwr)
 terminate(pwr)
 ```
 
-### AgilentE36312A
+#### AgilentE36312A
  
 ```julia
 pwr = initialize(AgilentE36312A)
@@ -213,7 +213,7 @@ enable_output(pwr) # Enables output on channel 3
 ```
 
 
-### GPIB Power Supply (SRSPS310) used with Prologix Controller
+#### GPIB Power Supply (SRSPS310) used with Prologix Controller
  
 To a initialize a device that is connected with a prologix
 controller you must specify what prologix channel the device
@@ -242,9 +242,9 @@ set_current_limit(p, 0.021u"A") # equivalent to set_current_limit(p, 21u"mA")
 enable_output(p)
 ```
 
-## Oscilloscopes
+### Oscilloscopes
 
-### AgilentDSOX4034A
+#### AgilentDSOX4034A
  
 
 ```julia
@@ -310,10 +310,10 @@ plot(data)
 ![wave](examples/wave.png)
 
 
-## Impedance Analyzers
+### Impedance Analyzers
 TODO: example with the Agilent4294A.
 
-## Multiple devices
+### Multiple devices
  
 Lets say you want to use a signal generator, power supply
 and oscilloscope all at once.
