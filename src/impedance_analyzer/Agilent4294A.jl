@@ -135,7 +135,7 @@ function set_measurement_to_impedance_and_phase(ia::Instrument{Agilent4294A})
 end
 
 
-@recipe function f(impedance::Array{typeof((1.0 + 0im)R), 1}; complex=false)
+@recipe function f(impedance::Array{typeof((1.0 + 0im)Ω), 1}; complex=false)
     title := "Impedance"
     layout := (2, 1)
     real_label, imag_label = if complex

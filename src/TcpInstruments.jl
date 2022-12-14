@@ -40,6 +40,7 @@ To see the different types of devices you can interface with
 use `help?> Instrument`.
 """
 module TcpInstruments
+
 import Base.show
 import UnicodePlots
 using Sockets
@@ -50,18 +51,17 @@ using MAT
 using JLD2
 using RecipesBase
 import InstrumentConfig: initialize, terminate
+using Reexport
 
-using Unitful
-using Unitful: s, ms, μs, ns, ps
-using Unitful: Current, Voltage, Frequency, Time
+@reexport using Unitful
+@reexport using Unitful: s, ms, μs, ns, ps
+@reexport using Unitful: MΩ, kΩ, Ω, mΩ, µΩ, nΩ, pΩ
+@reexport using Unitful: V, mV, µV, nV, pV
+@reexport using Unitful: A, mA, µA, nA, pA
+@reexport using Unitful: GHz, MHz, kHz, Hz
+using Unitful: dimension, Current, Voltage, Frequency, Time
+Unitful.@derived_dimension Resistance dimension(u"Ω")
 
-@derived_dimension Resistance dimension(u"Ω")
-export Resistance
-
-const R = u"Ω"
-const V = u"V"
-const A = u"A"
-const Hz = u"Hz"
 const SMU_NAN = 9.91e37
 
 export AbstractInstrument
