@@ -139,21 +139,24 @@ scan_network(; ip_network="10.1.150.")
 
 ## Units
 
-This package uses Unitful.
+This package uses Unitful.jl for units. All of Unitful.jl's exports are reexported by this package along with the commonly used units of this package, specifically:
+- s, ms, μs, ns, ps
+- MΩ, kΩ, Ω, mΩ, µΩ, nΩ, pΩ
+- V, mV, µV, nV, pV
+- A, mA, µA, nA, pA
+- GHz, MHz, kHz, Hz
 
-In order to control certain devices
-it is required to run:
-```julia
-using Unitful
-```
+Most users should therefore be able to interact with this package without specifically loading Unitful.jl.
+
+
 
 Commands such as:
 ```julia
-set_voltage_offset(instr, 0)
+set_voltage_offset(psu, 0)
 ```
-will not work you must specify the units:
+will not work, the unit needs to be specified:
 ```julia
-set_voltage_offset(instr, 0u"V")
+set_voltage_offset(psu, 0V)
 ```
 
 ## Examples
@@ -162,9 +165,9 @@ set_voltage_offset(instr, 0u"V")
 sg = initialize(Keysight33612A, "10.1.30.36")
 set_mode_cw(sg)               # Set to continuous waveform mode
 set_function(sg, "SIN")
-set_frequency(sg, 1u"kHz")
-set_amplitude(sg, 0.1u"V")
-set_voltage_offset(sg, 100u"mV")
+set_frequency(sg, 1kHz)
+set_amplitude(sg, 0.1V)
+set_voltage_offset(sg, 100mV)
 enable_output(sg)             # sine output starts here
 ```
 
@@ -177,8 +180,8 @@ enable_output(sg)             # sine output starts here
 # Initialize automatically puts this power supply in remote mode
 pwr = initialize(VersatilePower)
 
-set_voltage(pwr, 20u"V")
-set_current_limit(pwr, 4u"A")
+set_voltage(pwr, 20V)
+set_current_limit(pwr, 4A)
 enable_output(pwr)
 
 # Closes connection as with other devices but also puts this
@@ -193,17 +196,17 @@ pwr = initialize(AgilentE36312A)
 
 set_channel(pwr, 1)
 set_current_limit(pwr, 1)
-set_voltage(pwr, 2u"V")
+set_voltage(pwr, 2V)
 enable_output(pwr) # Enables output on channel 1
 
 set_channel(pwr, 2)
-set_voltage(pwr, 10u"V")
+set_voltage(pwr, 10V)
 enable_output(pwr) # Enables output on channel 2
 
 set_channel(pwr, 3)
-set_voltage(pwr, 10u"V")
+set_voltage(pwr, 10V)
 
-set_voltage(pwr, 0u"V"; chan=1) # Changes voltage of channel 1
+set_voltage(pwr, 0V; chan=1) # Changes voltage of channel 1
 
 get_voltage(pwr) # Get voltage channel 3
 get_voltage(pwr; chan=2)
@@ -236,9 +239,9 @@ julia> get_prologix(p)
 Using SRSPS310 Power Supply:
 ```julia
 p = initialize(SRSPS310, "10.1.30.37:1234"; GPIB_ID=2)
-set_voltage_limit(p, 1250u"V")
-set_voltage(p, 1250u"V")
-set_current_limit(p, 0.021u"A") # equivalent to set_current_limit(p, 21u"mA")
+set_voltage_limit(p, 1250V)
+set_voltage(p, 1250V)
+set_current_limit(p, 0.021A) # equivalent to set_current_limit(p, 21mA)
 enable_output(p)
 ```
 
@@ -327,13 +330,13 @@ sg    = initialize(Keysight33612A)
 
 set_mode_cw(sg)
 set_function(sg, "SIN")
-set_frequency(sg, 1000u"Hz")
-set_amplitude(sg, 0.1u"A")
-set_voltage_offset(sg, 0u"V")
+set_frequency(sg, 1000Hz)
+set_amplitude(sg, 0.1A)
+set_voltage_offset(sg, 0V)
 enable_output(sg)
 
-set_voltage(pwr, 20u"V")
-set_current_limit(pwr, 4u"A")
+set_voltage(pwr, 20V)
+set_current_limit(pwr, 4A)
 enable_output(pwr)
 
 data_array = get_data(scope, [1,2])
