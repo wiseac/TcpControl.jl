@@ -1,13 +1,14 @@
 using Documenter
 using TcpInstruments
 
+DocMeta.setdocmeta!(TcpInstruments, :DocTestSetup, :(using TcpInstruments); recursive=true)
 
 makedocs(;
     modules = [TcpInstruments],
     repo="https://github.com/Orchard-Ultrasound-Innovation/TcpInstruments.jl/blob/{commit}{path}#{line}",
     sitename = "TcpInstruments.jl",
     format = Documenter.HTML(;
-        prettyurls = get(ENV, "CI", nothing) == "true",
+        prettyurls = get(ENV, "CI", "false") == "true",
         canonical="https://Orchard-Ultrasound-Innovation.github.io/TcpInstruments.jl",
         assets=String[],
     ),
