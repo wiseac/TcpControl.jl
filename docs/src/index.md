@@ -310,7 +310,7 @@ You can also plot multiple waves at once:
 plot(data)
 ```
 
-![wave](examples/wave.png)
+![wave](assets/wave.png)
 
 
 ### Impedance Analyzers
