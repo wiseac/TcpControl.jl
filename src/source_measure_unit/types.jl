@@ -26,6 +26,9 @@ Supported functions
 - [`set_measurement_mode`](@ref)
 - [`spot_measurement`](@ref)
 
+- [`enable_autorange`](@ref)
+- [`disable_autorange`](@ref)
+
 - [`set_measurement_range`](@ref)
 - [`set_measurement_duration`](@ref)
 
@@ -79,6 +82,9 @@ Supported functions
 
 - [`set_measurement_mode`](@ref)
 - [`spot_measurement`](@ref)
+
+- [`enable_autorange`](@ref)
+- [`disable_autorange`](@ref)
 
 - [`set_measurement_range`](@ref)
 - [`set_measurement_duration`](@ref)

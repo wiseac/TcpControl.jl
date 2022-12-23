@@ -27,6 +27,8 @@ Supported functions
 - [`set_voltage`](@ref)
 - [`get_current_limit`](@ref)
 - [`set_current_limit`](@ref)
+- [`get_voltage_limit`](@ref)
+- [`set_voltage_limit`](@ref)
 """
 abstract type AgilentPowerSupply <: PowerSupply end
 """
@@ -44,6 +46,8 @@ Supported functions
 - [`set_voltage`](@ref)
 - [`get_current_limit`](@ref)
 - [`set_current_limit`](@ref)
+- [`get_voltage_limit`](@ref)
+- [`set_voltage_limit`](@ref)
 """
 struct AgilentE36312A <: AgilentPowerSupply end
 
@@ -66,6 +70,8 @@ Supported functions
 - [`set_voltage_limit`](@ref)
 - [`get_current_limit`](@ref)
 - [`set_current_limit`](@ref)
+- [`get_voltage_limit`](@ref)
+- [`set_voltage_limit`](@ref)
 """
 abstract type SRSPowerSupply <: PowerSupply end
 """
@@ -104,6 +110,8 @@ Supported functions
 - [`set_voltage`](@ref)
 - [`get_current_limit`](@ref)
 - [`set_current_limit`](@ref)
+- [`get_voltage_limit`](@ref)
+- [`set_voltage_limit`](@ref)
 
 
 - [`remote_mode`](@ref) (automatically called by [`initialize`](@ref))
@@ -133,6 +141,8 @@ Supported functions
 - [`set_voltage`](@ref)
 - [`get_current_limit`](@ref)
 - [`set_current_limit`](@ref)
+- [`get_voltage_limit`](@ref)
+- [`set_voltage_limit`](@ref)
 
 
 - [`remote_mode`](@ref) (automatically called by [`initialize`](@ref))
@@ -152,6 +162,8 @@ Supported functions
 - [`set_voltage`](@ref)
 - [`get_current_limit`](@ref)
 - [`set_current_limit`](@ref)
+- [`get_voltage_limit`](@ref)
+- [`set_voltage_limit`](@ref)
 
 
 - [`remote_mode`](@ref) (automatically called by [`initialize`](@ref))
