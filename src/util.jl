@@ -367,3 +367,56 @@ function fake_signal(n)
     end
     return out
 end
+
+
+function timeout1(f, timeout_sec)
+    retval = nothing
+    t = @async begin
+        task = current_task()
+        function timeout_cb(timer)
+            Base.throwto(task, InterruptException())
+        end
+        timeout = Timer(timeout_cb, timeout_sec)
+        try
+            retval = f()
+        catch e
+            if typeof(e) == InterruptException
+                @error "Timed out after $(timeout_sec) s"
+            end
+        end
+        close(timeout)
+    end
+    try
+        wait(t)
+    catch ex
+        throw(ex.task.exception)
+    end
+    return retval
+end
+
+
+
+function timeout2(f, timeout_sec)
+    # This is the previous code from instrument.jl
+    ch = Channel(1)
+    task = @async begin
+        reader_task = current_task()
+        function timeout_cb(timer)
+            put!(ch, :timeout)
+            Base.throwto(reader_task, InterruptException())
+        end
+        timeout = Timer(timeout_cb, timeout_sec)
+        data = f()
+        timeout_sec > 0 && close(timeout) # Cancel the timeout
+        put!(ch, data)
+    end
+    wait(task)
+    bind(ch, task)
+    retval = take!(ch)
+    if retval === :timeout
+        error("Timed out after $(timeout_sec) s.")
+    end
+    return retval
+end
+
+timeout = timeout1

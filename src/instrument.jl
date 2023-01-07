@@ -319,25 +319,7 @@ function clear_buffer(instr::AbstractInstrument)
     return nothing
 end
 
-
-function read_with_timeout(instr::AbstractInstrument, timeout_sec=10.0)
-    ch = Channel(1)
-    task = @async begin
-        reader_task = current_task()
-        function timeout_cb(timer)
-            put!(ch, :timeout)
-            Base.throwto(reader_task, InterruptException())
-        end
-        timeout = Timer(timeout_cb, timeout_sec)
-        data = read(instr)
-        timeout_sec > 0 && close(timeout) # Cancel the timeout
-        put!(ch, data)
-    end
-    wait(task)
-    bind(ch, task)
-    retval = take!(ch)
-    if retval === :timeout
-        return error("Query timed out")
-    end
-    return retval
+function read_with_timeout(instr::AbstractInstrument, timeout_sec=5)
+    f() = read(instr)
+    return timeout(f, timeout_sec)
 end
