@@ -26,87 +26,6 @@ julia> ?
 help?> Instrument
 ```
 
-Autoinitialize - Storage of name-aliases and IP addresses.
-
-You can create a `~/.tcp_instruments.yml` file which stores the IP-address 
-and an optional name-alias for all your devices
-in one easy-to-find place so they don't have to be hardcoded in scripts.
-
-To create an example config file that can be edited to your needs run:
-```
-create_config()
-```
-This will create a yaml file in your home directory: `~/.tcp_instruments.yml`
-
-This yaml file will be loaded everytime you use this package.
-
-You can also create a project-specific config by creating
-the config in your project root directory instead of your home
-directory. You can do this with:
-```
-create_config(pwd())
-```
-
-Once you have created a config file you can change it with
-```
-edit_config()
-```
-
-Format of `.tcp_instruments.yml` file:
-```julia
-{name-of-device}:
-    address: "{ip-address}"
-
-# GPIB Device connected with a prologix controller
-{name-of-device}:
-    gpib: {channel-number}
-    address: "{ip-address}"
-```
-
-Let's create a new `.tcp_instruments.yml` file or ensure the two previous
-devices are found in our `.tcp_instruments.yml` file
-```yaml
-Keysight33612A:
-    address: "10.1.30.36"
-    alias: "OleBigSG"
-SRSPS310:
-    gpib: 2
-    address: "10.1.30.37:1234"
-```
-
-Recompile the new config which is located in the current working directory
-```julia
-pkg> activate .
-julia> using TcpInstruments
-```
-
-Each TcpInstruments will first look for a config in the current directory and if none is found it will look in the home directory.
-
-The two devices from above can now be initialized as follows:
-```julia
-sg = initialize(Keysight33612A)
-p = initialize(SRSPS310)
-```
-
-Cool Tip: Since we specified an alias for the signal generator we can initialize it this way as well:
-```julia
-sg = initialize(OleBigSG)
-```
-
-(No dashes, spaces or other special characters in alias names, treat them like variables, because they are.)
-
-
-To send custom commands where no return response is expected use the `write()` function:
-```julia
-julia> write(instr, "<SCPI command>")
-```
-
-If the device is sending a response to the command use `query()` instead:
-```julia
-julia> response = query(instr, "<SCPI command>")
-```
-
-The convenience functions `f_query()` and `i_query()` parse the response string to a `Float64` and `Int64`, respectively.
 
 ## General Usage
 
@@ -342,3 +261,16 @@ enable_output(pwr)
 data_array = get_data(scope, [1,2])
 plot(data_array)
 ```
+
+## Custom Commands
+To send custom commands where no return response is expected use the `write()` function:
+```julia
+julia> write(instr, "<SCPI command>")
+```
+
+If the device is sending a response to the command use `query()` instead:
+```julia
+julia> response = query(instr, "<SCPI command>")
+```
+
+The convenience functions `f_query()` and `i_query()` parse the response string to a `Float64` and `Int64`, respectively.
