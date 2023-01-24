@@ -285,7 +285,7 @@ function attach_unit!(value, unit)
     elseif unit == "current"
         value = value * A
     elseif unit == "resistance"
-        value = value * R
+        value = value * Ω
     end
 
     return value
@@ -319,7 +319,7 @@ _spot_measurement(obj, channel) = query(obj, ":MEAS? (@$channel)")
 function parse_measurement_vcr!(arr)
     arr = split(arr, ",")
     arr = parse.(Float64, arr)
-    arr = arr[1] * V, arr[2] * A, arr[3] * R
+    arr = arr[1] * V, arr[2] * A, arr[3] * Ω
     arr = remove_NaN!(arr)
     return arr
 end
@@ -651,7 +651,7 @@ function _get_resistance(obj, channel)
     arr = fetch_array(obj, channel)
     arr = split(arr,",")
     arr = parse.(Float64, arr)
-    arr = arr * R
+    arr = arr * Ω
     return arr
 end
 

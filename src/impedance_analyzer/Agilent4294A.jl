@@ -86,7 +86,7 @@ function get_impedance(ia::Instrument{Agilent4294A})
     set_measurement_to_impedance_and_phase(ia)
     impedance = data[1:2:end] .+ (data[2:2:end])im
 
-    return ImpedanceAnalyzerData(info, frequency, impedance * R)
+    return ImpedanceAnalyzerData(info, frequency, impedance * Ω)
 end
 
 

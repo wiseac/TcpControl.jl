@@ -75,9 +75,9 @@ Returns resistance
 """
 function get_resistance(obj::Instrument{<:KeysightMultimeter}; wire)
     if wire == 2
-        f_query(obj, "MEASURE:RESISTANCE?"; timeout=0) * R
+        f_query(obj, "MEASURE:RESISTANCE?"; timeout=0) * Ω
     elseif wire == 4
-        f_query(obj, "MEASURE:FRESISTANCE?"; timeout=0) * R
+        f_query(obj, "MEASURE:FRESISTANCE?"; timeout=0) * Ω
     else
         error("wire flag must be 2 or 4 not $wire")
     end
