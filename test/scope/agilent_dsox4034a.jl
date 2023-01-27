@@ -1,9 +1,13 @@
 using TcpInstruments
 using Test
 
-scope = initialize(AgilentDSOX4034A)
-@info "Successfully connected $(scope.model) at $(scope.address)"
-
+scope = initialize(AgilentDSOX4034A) 
+@testset "initalize" begin
+    if scope.connected
+        @info "Successfully connected $(scope.model) at $(scope.address)"
+    end
+    @test typeof(scope) == TcpInstruments.Instrument{AgilentDSOX4034A}
+end
 
 """
 Spec:
@@ -43,29 +47,102 @@ Terminate TCP connection
 
 """
 
-data = get_data(scope, 1)
+@testset "Set and get impedance" begin
+    set_impedance_1Mohm(scope)
+    @test get_impedance(scope) == "ONEM"
+    set_impedance_50ohm(scope)
+    @test get_impedance(scope) == "FIFT"
+end
 
-data2 = get_data(scope, [1,2])
-@info typeof(data2)
+@testset "Waveform Source" begin
+    TcpInstruments.set_waveform_source(scope, 1)
+    @test TcpInstruments.get_waveform_source(scope) == "CHAN1"
+end
 
-@test !isempty(data.volt)
-@test !isempty(data.time)
+@testset "Aquisition type" begin
+    set_acquisition_type_normal(scope)
+    @test get_acquisition_type(scope) == "NORM"
+    set_acquisition_type_average(scope)
+    @test get_acquisition_type(scope) == "AVER"
+    set_acquisition_type_high_res(scope)
+    @test get_acquisition_type(scope) == "HRES"
+    set_acquisition_type_peak(scope)
+    @test get_acquisition_type(scope) == "PEAK"
+end
 
-@info get_lpf_state(scope)
-lpf_on(scope)
-@info get_lpf_state(scope)
-lpf_off(scope)
-@info get_lpf_state(scope)
+@testset "Waveform Points Mode" begin
+    TcpInstruments.set_waveform_points_mode(scope, :NORMAL)
+    @test TcpInstruments.get_waveform_points_mode(scope) == "NORM"
 
-@info get_impedance(scope)
-set_impedance_1Mohm(scope)
-@info get_impedance(scope)
-set_impedance_50ohm(scope)
-@info get_impedance(scope)
+    TcpInstruments.set_waveform_points_mode(scope, :RAW)
+    @test TcpInstruments.get_waveform_points_mode(scope) == "RAW"
+end
 
+@testset "Data transfer format" begin
+    set_data_transfer_format_8bit(scope)
+    @test get_data_transfer_format(scope) == "BYTE"
+
+    set_data_transfer_format_16bit(scope)
+    @test get_data_transfer_format(scope) == "WORD"
+end
+
+@testset "set_speed_mode()" begin
+    set_speed_mode(scope, 1)
+    @test get_data_transfer_format(scope) == "WORD"
+    @test TcpInstruments.get_waveform_points_mode(scope) == "RAW"
+    set_speed_mode(scope, 3)
+    @test get_data_transfer_format(scope) == "WORD"
+    @test TcpInstruments.get_waveform_points_mode(scope) == "NORM"
+    set_speed_mode(scope, 5)
+    @test get_data_transfer_format(scope) == "BYTE"
+    @test TcpInstruments.get_waveform_points_mode(scope) == "RAW"
+    set_speed_mode(scope, 6)
+    @test get_data_transfer_format(scope) == "BYTE"
+    @test TcpInstruments.get_waveform_points_mode(scope) == "NORM"
+end 
+
+@testset "Data transfer byte order" begin
+    TcpInstruments.set_data_transfer_byte_order(scope, :least_significant_first)
+    @test TcpInstruments.get_data_transfer_byte_order(scope) == "LSBF"
+
+    TcpInstruments.set_data_transfer_byte_order(scope, :most_significant_first)
+    @test TcpInstruments.get_data_transfer_byte_order(scope) == "MSBF"
+end
+
+@testset "LPF state" begin
+    lpf_on(scope)
+    @test get_lpf_state(scope) == "1"
+    lpf_off(scope)
+    @test get_lpf_state(scope) == "0"
+end
+
+
+@testset "get data"  begin
+    data = get_data(scope, 1)
+    @test typeof(data) == TcpInstruments.ScopeData
+    @test !isempty(data.volt)
+    @test !isempty(data.time)
+    data = get_data(scope, 2)
+
+    @test typeof(data) == TcpInstruments.ScopeData
+    @test !isempty(data.volt)
+    @test !isempty(data.time)
+    data = get_data(scope, 3)
+
+    @test typeof(data) == TcpInstruments.ScopeData
+    @test !isempty(data.volt)
+    @test !isempty(data.time)
+
+    data = get_data(scope, 4)
+    @test typeof(data) == TcpInstruments.ScopeData
+    @test !isempty(data.volt)
+    @test !isempty(data.time)
+end
 
 # plot(data)
 
 terminate(scope)
-@info "Successfully disconnected"
-@info "Goodbye"
+if !scope.connected
+    @info "Successfully disconnected"
+    @info "Goodbye"
+end
