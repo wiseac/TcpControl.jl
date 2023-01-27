@@ -381,7 +381,7 @@ function timeout1(f, timeout_sec)
             retval = f()
         catch e
             if typeof(e) == InterruptException
-                @error "Timed out after $(timeout_sec) s"
+                error("Timed out after $(timeout_sec) s")
             end
         end
         close(timeout)
@@ -397,16 +397,21 @@ end
 
 
 function timeout2(f, timeout_sec)
-    # This is the previous code from instrument.jl
+    data = nothing
     ch = Channel(1)
     task = @async begin
         reader_task = current_task()
         function timeout_cb(timer)
-            put!(ch, :timeout)
             Base.throwto(reader_task, InterruptException())
         end
         timeout = Timer(timeout_cb, timeout_sec)
-        data = f()
+        try
+            data = f()
+        catch e
+            if typeof(e) == InterruptException
+                data = :timeout
+            end
+        end
         timeout_sec > 0 && close(timeout) # Cancel the timeout
         put!(ch, data)
     end
@@ -415,6 +420,7 @@ function timeout2(f, timeout_sec)
     retval = take!(ch)
     if retval === :timeout
         error("Timed out after $(timeout_sec) s.")
+        return nothing
     end
     return retval
 end
