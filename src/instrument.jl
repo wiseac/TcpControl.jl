@@ -224,10 +224,17 @@ function write(instr::AbstractInstrument, message::AbstractString)
 	println(instr.sock, message)
 end
 
-function read(instr::AbstractInstrument)
-    !instr.connected && error("Instrument is not connected, cannot read from it!")
-	return rstrip(readline(instr.sock), ['\r', '\n'])
+function read(instr::AbstractInstrument;  num_bytes::Integer=0)
+    verify_is_connected(instr)
+    if num_bytes == 0
+        retval = rstrip(readline(instr.sock), ['\r', '\n'])
+    else
+        retval = read(instr.sock, num_bytes)
+    end
+    return retval
 end
+
+verify_is_connected(instr) = !instr.connected && @error("Instrument is not connected, cannot read from it!")
 
 """
     query(instr::Instrument, message::AbstractString; timeout=2.8)
@@ -255,7 +262,7 @@ error will be thrown.
 """
 function query(instr::AbstractInstrument, message::AbstractString; timeout=2.8)
     write(instr, message)
-    return timeout == 0 ? read(instr) : read_with_timeout(instr, timeout)
+    return timeout == 0 ? read(instr) : read_with_timeout(instr; timeout)
 end
 
 """
@@ -314,12 +321,12 @@ Remove any unread data from the instrument buffer
 - `instr::Instrument`: Instrument to have unread data cleared from buffer
 """
 function clear_buffer(instr::AbstractInstrument)
-    while !isnothing(read_with_timeout(instr, 0.5))
+    while !isnothing(read_with_timeout(instr; timeout=0.5))
     end
     return nothing
 end
 
-function read_with_timeout(instr::AbstractInstrument, timeout_sec=5)
-    f() = read(instr)
-    return timeout(f, timeout_sec)
+function read_with_timeout(instr::AbstractInstrument; num_bytes::Integer=0, timeout=5)
+    f() = read(instr; num_bytes)
+    return call_w_timeout(f, timeout)
 end

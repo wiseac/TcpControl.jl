@@ -425,4 +425,4 @@ function timeout2(f, timeout_sec)
     return retval
 end
 
-timeout = timeout1
+call_w_timeout = timeout1

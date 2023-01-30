@@ -80,9 +80,9 @@ end
 
 function read_uint8(scope::Instrument{<:AgilentScope})
     request_waveform_data(scope)
-    num_data_bytes = get_num_data_bytes(scope)
+    num_bytes = get_num_data_bytes(scope)
 
-    data = read_num_bytes(scope, num_data_bytes)
+    data = read_with_timeout(scope; num_bytes)
     read_end_of_line_character(scope)
 
     num_data_points = get_num_data_points(scope)
@@ -97,9 +97,9 @@ end
 function read_uint16(scope::Instrument{<:AgilentScope})
     set_data_transfer_byte_order(scope, :least_significant_first)
     request_waveform_data(scope)
-    num_data_bytes = get_num_data_bytes(scope)
+    num_bytes = get_num_data_bytes(scope)
 
-    data = reinterpret(UInt16, read_num_bytes(scope, num_data_bytes))
+    data = reinterpret(UInt16, read_with_timeout(scope; num_bytes))
     read_end_of_line_character(scope)
 
     num_data_points = get_num_data_points(scope)
@@ -146,23 +146,16 @@ function get_data_header(scope::Instrument{<:AgilentScope})
     # bytes follow (p.1433 of Keysight InfiniiVision 4000 X-Series Oscilloscopes
     # Programmer's Guide)
     num_header_description_bytes = 2
-    header_description_uint8 = read(scope.sock, num_header_description_bytes)
+    header_description_uint8 = read_with_timeout(scope; num_bytes=num_header_description_bytes)
     if header_description_uint8[1] != UInt8('#')
         error("The waveform data format is not formatted as expected")
     end
     header_block_length = parse(Int, convert(Char, header_description_uint8[2]))
-    header_block_uint8 = read(scope.sock, header_block_length)
+    header_block_uint8 = read_with_timeout(scope; num_bytes=header_block_length)
     header = vcat(header_description_uint8, header_block_uint8)
     header = String(convert.(Char, header))
     return header
 end
-
-
-function read_num_bytes(scope::Instrument{<:AgilentScope}, num_bytes)
-    output = read(scope.sock, num_bytes)
-    return output
-end
-
 
 
 function read_end_of_line_character(scope::Instrument{<:AgilentScope})
