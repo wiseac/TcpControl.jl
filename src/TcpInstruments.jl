@@ -92,6 +92,7 @@ export set_acquisition_type_normal, set_acquisition_type_average, set_acquisitio
 export lpf_on, lpf_off, get_lpf_state
 export set_impedance_1Mohm, set_impedance_50ohm, get_impedance
 export get_coupling
+export get_voltage_axis
 
 export get_function, set_function
 export get_frequency, set_frequency

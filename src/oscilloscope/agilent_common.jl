@@ -540,3 +540,51 @@ function set_acquisition_type_peak(scope::Instrument{<:AgilentScope})
     set_acquisition_type(scope, :peak)
     return nothing
 end
+
+"""
+    get_voltage_axis(scope::Instr{<:AgilentScope}, ch_vec::Vector{Int})
+    get_voltage_axis(scope::Instr{<:AgilentScope}, ch::Int)
+    get_voltage_axis(scope::Instr{<:AgilentScope})
+
+Gets the vertical scale setting from the specified channel(s). If no channels are specified,
+vertical scale setting for all channels will be returned
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+- `channels::Vector{Int}`: vector of channel numbers
+- `channel::Int`: channel number
+
+# Returns
+- `NamedTuple`: per channel with the fields 
+    channel
+    scale (Voltage per division)
+    offset (Voltage offset)
+
+# Throws
+- `"Channel is offline, voltage scale cannot be read"`: if channel is offline
+"""
+function get_voltage_axis(scope::Instrument{<:AgilentScope}, channels::Vector{Int})
+    verify_channels(get_valid_channels(scope), channels)
+    return [get_voltage_axis(scope, channel) for channel in channels]
+end
+
+function get_voltage_axis(scope::Instrument{<:AgilentScope}, channel::Int)
+    verify_channels(get_valid_channels(scope), [channel])
+    return (channel=channel, scale=_get_voltage_scale(scope, channel), offset=_get_voltage_offset(scope, channel))
+end
+
+function get_voltage_axis(scope::Instrument{<:AgilentScope})
+    return [get_voltage_axis(scope, channel) for channel in get_valid_channels(scope)]
+end
+
+function verify_channels(valid_channels, channels)
+    for channel in channels
+        if !(channel in valid_channels)
+            error("Channel $channel is offline, voltage axis cannot be read")
+        end
+    end
+    return nothing
+end
+
+_get_voltage_scale(scope::Instrument{<:AgilentScope}, channel) = uparse(query(scope, "CHANNEL$channel:SCALE?") * "V")
+_get_voltage_offset(scope::Instrument{<:AgilentScope}, channel) = uparse(query(scope, "CHANNEL$channel:OFFSET?") * "V")
