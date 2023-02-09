@@ -87,7 +87,7 @@ function read_uint8(scope::Instrument{<:AgilentScope})
 
     num_data_points = get_num_data_points(scope)
     if length(data) != num_data_points
-        error("Transferred data did not have the expected number of data points\nTransferred: $(length(data))\nExpected: $num_values ($num_data_points * $num_values_per_point)\n")
+        error("Transferred data did not have the expected number of data points\nTransferred: $(length(data))\nExpected: $num_data_points")
     end
 
     return data
@@ -104,7 +104,7 @@ function read_uint16(scope::Instrument{<:AgilentScope})
 
     num_data_points = get_num_data_points(scope)
     if length(data) != num_data_points
-        error("Transferred data did not have the expected number of data points\nTransferred: $(length(data))\nExpected: $num_values ($num_data_points * $num_values_per_point)\n")
+        error("Transferred data did not have the expected number of data points\nTransferred: $(length(data))\nExpected: $num_data_points")
     end
 
     return data
