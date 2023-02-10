@@ -93,6 +93,7 @@ export lpf_on, lpf_off, get_lpf_state
 export set_impedance_1Mohm, set_impedance_50ohm, get_impedance
 export get_coupling
 export get_voltage_axis
+export get_trigger, set_trigger
 
 export get_function, set_function
 export get_frequency, set_frequency

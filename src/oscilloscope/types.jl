@@ -224,3 +224,17 @@ function show(io::IO, x::ScopeData)
     show(io, plt)
     println("")
 end
+
+struct TriggerInfo
+    mode::String
+    trigger_level::Unitful.Voltage
+    edge_type::String
+end
+
+function show(io::IO, x::TriggerInfo)
+    println(io, "(TriggerInfo:")
+    println(io, "          .mode:  \"$(x.mode)\"")
+    println(io, " .trigger_level:  $(x.trigger_level)")
+    println(io, "     .edge_type:  \"$(x.edge_type)\"")
+    println(io, ")")
+end

@@ -564,7 +564,6 @@ vertical scale setting for all channels will be returned
 - `"Channel is offline, voltage scale cannot be read"`: if channel is offline
 """
 function get_voltage_axis(scope::Instrument{<:AgilentScope}, channels::Vector{Int})
-    verify_channels(get_valid_channels(scope), channels)
     return [get_voltage_axis(scope, channel) for channel in channels]
 end
 
@@ -588,3 +587,178 @@ end
 
 _get_voltage_scale(scope::Instrument{<:AgilentScope}, channel) = uparse(query(scope, "CHANNEL$channel:SCALE?") * "V")
 _get_voltage_offset(scope::Instrument{<:AgilentScope}, channel) = uparse(query(scope, "CHANNEL$channel:OFFSET?") * "V")
+
+"""
+    set_trigger(scope::Instrument{<:AgilentScope}; level::Voltage, mode::Symbol, edge::Symbol=:pos)
+
+Set trigger parameters
+
+# Arguments
+- `scope::Instr{<:AgilentScope}`: AgilentScope
+- `mode::String`: scope mode "NORM" or "AUTO"
+- `level::Voltage`: voltage to set trigger to 
+
+# Keywords
+- `edge::String`: Default value of "POS" 
+"""
+function set_trigger(scope::Instrument{<:AgilentScope}; mode::String, level::Voltage, edge::String="POS")
+    set_mode(scope, mode)
+    set_trigger_level(scope, level)
+    set_edge_type(scope, edge)
+    return nothing
+end
+
+
+"""
+    get_trigger(scope::Instrument{<:AgilentScope})
+
+Gets trigger parameters
+
+# Arguments
+- `scope::Instr{<:AgilentScope}`: AgilentScope
+
+# Returns
+- `TriggerInfo': Struct of scope mode , trigger level, edge type
+"""
+function get_trigger(scope::Instrument{<:AgilentScope})
+    return TriggerInfo(get_mode(scope), get_trigger_level(scope), get_edge_type(scope))
+end
+
+"""
+    get_trigger_level(scope::Instr{<:AgilentScope})
+
+Gets trigger level
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+# Returns
+- `Voltage`: trigger level 
+"""
+function get_trigger_level(scope::Instrument{<:AgilentScope})
+    return parse(Float64,query(scope, "TRIGGER:LEVEL?")) * V
+end
+
+"""
+    set_trigger_level(scope::Instrument{<:AgilentScope}, level::Voltage)
+
+Sets trigger level
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+- 'level::Voltage' : voltage to set trigger level to 
+"""
+function set_trigger_level(scope::Instrument{<:AgilentScope}, level::Voltage)
+    level =  Float64(uconvert(V, level))
+    write(scope, "TRIGGER:LEVEL $level")
+end
+
+"""
+    get_mode(scope::Instr{<:AgilentScope})
+
+Get scope mode
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+
+# Returns
+- `String`: "NORM" or "AUTO"
+"""
+function get_mode(scope::Instrument{<:AgilentScope})
+    return query(scope, "TRIGGER:SWEEP?")
+end
+
+"""
+    set_mode(scope::Instrument{<:AgilentScope}, mode::String)
+
+Set scope mode
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+- `mode::String`: "AUTO" or "NORM"
+"""
+function set_mode(scope::Instrument{<:AgilentScope}, mode::String)
+    if mode ∈ ["AUTO", "NORM"]
+        write(scope, "TRIGGER:SWEEP $mode")
+    else 
+        error("Mode $mode not recognized. Specify AUTO or NORM instead")
+    end
+end
+
+"""
+get_edge_type(scope::Instrument{<:AgilentScope})
+
+    Gets edge type
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+# Returns
+- `String`: POSITIVE, NEGATIVE, EITHER, ALTERNATE
+"""
+function get_edge_type(scope::Instrument{<:AgilentScope})
+    return parse_edge_type(query(scope, "TRIGGER:EDGE:SLOPE?"))
+end
+
+function parse_edge_type(edge_type)
+    edge_type_dic = Dict("POS" => "POSITIVE", "NEG" => "NEGATIVE", "EITH" => "EITHER", "ALT" => "ALTERNATE")
+    return edge_type_dic[edge_type]
+end
+
+"""
+    set_edge_type(scope::Instr{<:AgilentScope, edge_type::Symbol})
+
+Sets edge type (slop) to either POSITIVE, NEGATIVE, EITH (either), Alt(alternate)
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+- `edge_type::String`: The edge type. Must be either "POSITIVE", "NEGATIVE", "EITHER", "ALTERNATE",
+""" 
+function set_edge_type(scope::Instrument{<:AgilentScope}, edge_type::String)
+    if edge_type ∈ ["POSITIVE", "NEGATIVE", "EITHER", "ALTERNATE"]
+        set_edge_type(scope, Val(Symbol(lowercase(edge_type))))
+    else
+        error("Edge type $edge_type not recognized. Specify POSITIVE, NEGATIVE, EITHER, or ALTERNATE instead")
+    end
+end
+set_edge_type(scope::Instrument{<:AgilentScope}, ::Val{:positive}) = write(scope, "TRIGGER:EDGE:SLOPE POS")
+set_edge_type(scope::Instrument{<:AgilentScope}, ::Val{:negative}) = write(scope, "TRIGGER:EDGE:SLOPE NEG")
+set_edge_type(scope::Instrument{<:AgilentScope}, ::Val{:either}) = write(scope, "TRIGGER:EDGE:SLOPE EITH")
+set_edge_type(scope::Instrument{<:AgilentScope}, ::Val{:alternate}) = write(scope, "TRIGGER:EDGE:SLOPE ALT")
+
+"""
+    get_trigger_mode(scope::Instr{<:AgilentScope})
+
+Gets trigger mode
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+# Returns
+- `String`: "EDGE", "GLITCH", "PATTERN", "TV", "DELAY", "EBURST"
+"""
+function get_trigger_mode(scope::Instrument{<:AgilentScope})
+    return query(scope, "TRIGGER:MODE?")
+end
+
+"""
+    set_trigger_mode(scope::Instr{<:AgilentScope, mode::Symbol})
+
+Sets trigger mode to either EDGE, GLITCH, PATTERN, TV, DELAY, EBURST
+
+# Arguments
+- `instr::Instr{<:AgilentScope}`: AgilentScope
+- `mode::String`: The trigger mode. Must be either "EDGE", "GLITCH", "PATTERN", "TV",
+                 "EBURST".
+                  PROGRAMMING GUIDE p. 1308
+""" 
+function set_trigger_mode(scope::Instrument{<:AgilentScope}, mode::String)
+    if mode ∈ ["EDGE", "GLITCH", "PATTERN", "TV", "DELAY", "EBURST"]
+        set_trigger_mode(scope, Val(Symbol(lowercase(mode))))
+    else
+        error("Trigger mode $mode not recognized. Specify EDGE, GLITCH, PATTERN, TV or EBURST instead")
+    end
+end
+set_trigger_mode(scope::Instrument{<:AgilentScope}, ::Val{:edge}) = write(scope, "TRIGGER:MODE EDGE")
+set_trigger_mode(scope::Instrument{<:AgilentScope}, ::Val{:glitch}) = write(scope, "TRIGGER:MODE GLIT")
+set_trigger_mode(scope::Instrument{<:AgilentScope}, ::Val{:pattern}) = write(scope, "TRIGGER:MODE PATT")
+set_trigger_mode(scope::Instrument{<:AgilentScope}, ::Val{:tv}) = write(scope, "TRIGGER:MODE TV")
+set_trigger_mode(scope::Instrument{<:AgilentScope}, ::Val{:eburst}) = write(scope, "TRIGGER:MODE EBUR")
+

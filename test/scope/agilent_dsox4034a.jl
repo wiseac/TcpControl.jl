@@ -139,6 +139,42 @@ end
     @test !isempty(data.time)
 end
 
+@testset "Set and Get Trigger Mode" begin
+    TcpInstruments.set_trigger_mode(scope, "EDGE")
+    @test TcpInstruments.get_trigger_mode(scope) == "EDGE"
+    TcpInstruments.set_trigger_mode(scope,  "GLITCH")
+    @test TcpInstruments.get_trigger_mode(scope) == "GLIT"
+    TcpInstruments.set_trigger_mode(scope, "PATTERN")
+    @test TcpInstruments.get_trigger_mode(scope) == "PATT"
+    TcpInstruments.set_trigger_mode(scope, "TV")
+    @test TcpInstruments.get_trigger_mode(scope) == "TV"
+    TcpInstruments.set_trigger_mode(scope, "EBURST")
+    @test TcpInstruments.get_trigger_mode(scope) == "EBUR"
+end
+
+@testset "Set and get edge type" begin
+    TcpInstruments.set_edge_type(scope, "POSITIVE")
+    @test TcpInstruments.get_edge_type(scope) == "POSITIVE"
+    TcpInstruments.set_edge_type(scope, "NEGATIVE")
+    @test TcpInstruments.get_edge_type(scope) == "NEGATIVE"
+    TcpInstruments.set_edge_type(scope, "EITHER")
+    @test TcpInstruments.get_edge_type(scope) == "EITHER"
+    TcpInstruments.set_edge_type(scope, "ALTERNATE")
+    @test TcpInstruments.get_edge_type(scope) == "ALTERNATE"
+end
+
+@testset "set and get trigger level" begin
+    TcpInstruments.set_trigger_level(scope, 0.2u"V")
+    @test TcpInstruments.get_trigger_level(scope) == 0.2u"V"
+end
+
+@testset "Set and Get  Mode" begin
+    TcpInstruments.set_mode(scope, "AUTO")
+    @test TcpInstruments.get_mode(scope) == "AUTO"
+    TcpInstruments.set_mode(scope,  "NORM")
+    @test TcpInstruments.get_mode(scope) == "NORM"
+end
+
 # plot(data)
 
 terminate(scope)
