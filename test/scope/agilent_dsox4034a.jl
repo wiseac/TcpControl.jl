@@ -177,6 +177,25 @@ end
 
 # plot(data)
 
+@testset "Get/set time axis" begin
+    @test_throws "time_per_div must be in the range" set_time_axis(scope, time_per_div=-2s, time_offset=6.3s)
+    @test_throws "time_offset must be in the range" set_time_axis(scope, time_per_div=500.1ms, time_offset=510.3s)
+    set_time_axis(scope, time_per_div=1.635μs, time_offset=30ms)
+    @test get_time_axis(scope) == (time_per_div=1.635μs, time_offset=30ms)
+
+    set_time_axis(scope, time_per_div=2.75ns, time_offset=3.333ms)
+    @test get_time_axis(scope) == (time_per_div=2.75ns, time_offset=3.333ms)
+
+    set_time_axis(scope, time_per_div=49s, time_offset=3s)
+    @test get_time_axis(scope) == (time_per_div=49s, time_offset=3s)
+
+    set_time_axis(scope, time_per_div=3.59s, time_offset=30ps)
+    @test get_time_axis(scope) == (time_per_div=3.59s, time_offset=30ps)
+
+    set_time_axis(scope, time_per_div=16ms, time_offset=4.123ns)
+    @test get_time_axis(scope) == (time_per_div=16ms, time_offset=4.12ns)
+end
+
 terminate(scope)
 if !scope.connected
     @info "Successfully disconnected"

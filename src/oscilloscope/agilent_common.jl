@@ -582,9 +582,78 @@ function verify_channels(valid_channels, channels)
             error("Channel $channel is offline, voltage axis cannot be read")
         end
     end
+end
+"""
+    set_time_axis(scope::Instr{<:AgilentScope}; time_per_div::Unitful.Time, time_offset::Unitful.Time)
+
+Set the horizontal scale or units per division for the main window by setting the time per div and/or time offset
+
+# Arguments
+- `scope::Instr{<:AgilentScope}`: AgilentScope
+- `time_per_div::Unitful.Time`: Time per division [optional]
+- `time_offset::Unitful.Time`: Offset time [optional]
+"""
+function set_time_axis(scope::Instrument{<:AgilentScope}; time_per_div::Unitful.Time, time_offset::Unitful.Time)
+    !isnothing(time_per_div) && set_time_per_div(scope, time_per_div)
+    !isnothing(time_offset) && set_time_offset(scope, time_offset)
     return nothing
 end
 
+function set_time_per_div(scope::Instrument{<:AgilentScope}, time_per_div::Unitful.Time)
+    verify_time(time_per_div, "time_per_div", 2ns, 50s)
+    time_per_div = unitful_to_string(time_per_div)
+    _set_time_per_div(scope, time_per_div)
+    return nothing
+end
+
+function set_time_offset(scope::Instrument{<:AgilentScope}, time_offset::Unitful.Time)
+    verify_time(time_offset, "time_offset", -500s, 500s)
+    time_offset = unitful_to_string(time_offset)
+    _set_time_offset(scope, time_offset)
+    return nothing
+end
+
+function verify_time(time_input, name, lowlim, uplim)
+    if time_input < lowlim || time_input > uplim
+        error("$name must be in the range $lowlim to $uplim (was: $time_input)")
+    end
+    return nothing
+end
+
+function unitful_to_string(value)
+    unit(value) == µs && return μs_to_scientific_e_notation(value)
+    return string(value)
+end
+
+μs_to_scientific_e_notation(microseconds) = string(ustrip(microseconds)) * "E-06"
+
+_set_time_per_div(scope::Instrument{<:AgilentScope}, time_per_div) = write(scope, "TIMEBASE:SCALE $time_per_div")
+
+_set_time_offset(scope::Instrument{<:AgilentScope}, time_offset) = write(scope, "TIMEBASE:POSITION $time_offset") # alias for TIMEBASE:DELAY, which is obsolete
+
+"""
+    get_time_axis(scope::Instr{<:AgilentScope})
+
+Gets the horizontal scale or units per divison for the main window
+    
+# Arguments
+- `scope::Instr{<:AgilentScope}`: AgilentScope
+# Returns
+- `NamedTuple`: With the fields
+    time_per_div
+    time_offset
+"""
+function get_time_axis(scope::Instrument{<:AgilentScope})
+    parsed_unit_per_div = _get_time_per_division(scope)
+    best_prefix_unit_per_div = convert_to_best_prefix(parsed_unit_per_div)
+    parsed_offset = _get_offset(scope)
+    best_prefix_offset = convert_to_best_prefix(parsed_offset)
+    return (time_per_div=best_prefix_unit_per_div, time_offset=best_prefix_offset)
+end
+
+_get_time_per_division(scope::Instrument{<:AgilentScope}) = parse(Float64, query(scope, "TIMEBASE:SCALE?")) * u"s"
+
+_get_offset(scope::Instrument{<:AgilentScope}) = parse(Float64, query(scope, "TIMEBASE:POSITION?")) * u"s"
 _get_voltage_scale(scope::Instrument{<:AgilentScope}, channel) = uparse(query(scope, "CHANNEL$channel:SCALE?") * "V")
 _get_voltage_offset(scope::Instrument{<:AgilentScope}, channel) = uparse(query(scope, "CHANNEL$channel:OFFSET?") * "V")
 
@@ -761,4 +830,3 @@ set_trigger_mode(scope::Instrument{<:AgilentScope}, ::Val{:glitch}) = write(scop
 set_trigger_mode(scope::Instrument{<:AgilentScope}, ::Val{:pattern}) = write(scope, "TRIGGER:MODE PATT")
 set_trigger_mode(scope::Instrument{<:AgilentScope}, ::Val{:tv}) = write(scope, "TRIGGER:MODE TV")
 set_trigger_mode(scope::Instrument{<:AgilentScope}, ::Val{:eburst}) = write(scope, "TRIGGER:MODE EBUR")
-
