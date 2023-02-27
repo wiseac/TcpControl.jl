@@ -3,6 +3,7 @@ Supported Instruments:
 
   - [`AgilentDSOX4024A`](@ref)
   - [`AgilentDSOX4034A`](@ref)
+  - [`AgilentDSOX1204G`](@ref)
 """
 abstract type Oscilloscope <: AbstractInstrument end
 
@@ -152,6 +153,52 @@ Supported functions
 - [`get_waveform_num_points`](@ref)
 """
 struct AgilentDSOX4034A <: AgilentScope end
+"""
+Supported functions
+- [`initialize`](@ref)
+- [`terminate`](@ref)
+
+
+- [`run`](@ref)
+- [`stop`](@ref)
+- [`get_data`](@ref)
+- [`get_waveform_info`](@ref)
+- [`get_data_transfer_format`](@ref)
+- [`set_data_transfer_format_8bit`](@ref)
+- [`set_data_transfer_format_16bit`](@ref)
+- [`get_acquisition_type`](@ref)
+- [`set_acquisition_type`](@ref)
+- [`set_acquisition_type_normal`](@ref)
+- [`set_acquisition_type_average`](@ref)
+- [`set_acquisition_type_high_res`](@ref)
+- [`set_acquisition_type_high_peak`](@ref)
+
+
+- [`get_impedance`](@ref)
+- [`set_impedance_1Mohm`](@ref)
+- [`set_impedance_50ohm`](@ref)
+- [`get_lpf_state`](@ref)
+- [`lpf_on`](@ref)
+- [`lpf_off`](@ref)
+- [`get_coupling`](@ref)
+- [`get_function`](@ref)
+- [`set_function`](@ref)
+- [`get_frequency`](@ref)
+- [`set_frequency`](@ref)
+- [`get_amplitude`](@ref)
+- [`set_amplitude`](@ref)
+- [`get_voltage_offset`](@ref)
+- [`set_voltage_offset`](@ref)
+- [`set_burst_mode_gated`](@ref)
+- [`set_burst_mode_triggered`](@ref)
+- [`get_burst_mode`](@ref)
+- [`get_mode`](@ref)
+- [`set_mode_burst`](@ref)
+- [`set_mode_cw`](@ref)
+- [`set_speed_mode`](@ref)
+- [`set_waveform_num_points`](@ref)
+- [`get_waveform_num_points`](@ref)
+"""
 struct AgilentDSOX1204G <: AgilentScope end
 
 struct ScopeInfo
