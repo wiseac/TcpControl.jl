@@ -48,7 +48,7 @@ function get_data(instr::Instrument{<:AgilentScope}, ch_vec::Vector{Int}; check_
             end
         end
     end
-    stop(instr) # Makes sure the data from each channel is from the same trigger event
+    digitize_blocking_wait(instr)
     wfm_data = [get_data(instr, ch) for ch in ch_vec]
     run(instr)
     return wfm_data
@@ -61,6 +61,8 @@ function get_data(instr::Instrument{<:AgilentScope}, ch::Integer)
     return parse_raw_waveform(raw_data, info)
 end
 
+
+digitize_blocking_wait(scope::Instrument{<:AgilentScope}) = write(scope, "DIGITIZE")
 
 set_waveform_source(instr::Instrument{<:AgilentScope}, ch::Int) = write(instr, "WAVEFORM:SOURCE CHAN$ch")
 
