@@ -167,7 +167,7 @@ end
 
 
 function get_num_data_points(scope::Instrument{<:AgilentScope})
-    return i_query(scope, "WAVEFORM:POINTS?")
+    return i_query(scope, "WAVEFORM:POINTS?", timeout=7)
 end
 
 
